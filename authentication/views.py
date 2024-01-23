@@ -480,6 +480,14 @@ class AdminRegistrationView(View):
                 return redirect("AdminRegistrationView")
             else:
                 agree = eval(agree)
+                
+            today = datetime.now().date()
+            age = today.year - date_of_birth.year - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
+            
+            if age < 18:
+                self.logger.error("User must be at least 18 years old.")
+                messages.error(request, "User must be at least 18 years old.")
+                return redirect("AdminRegistrationView")
             
             admin_user = get_user_model()(
                 email=email,
