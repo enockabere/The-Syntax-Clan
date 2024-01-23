@@ -433,7 +433,7 @@ class ResendResetToken(UserObjectMixins, View):
             return redirect("reset")
 
 
-class AdminRegistrationView(View):
+class AdminRegistrationView(UserObjectMixins,View):
     template_name = 'admin_registration.html'
     logger = logging.getLogger('authentication')
 
@@ -503,8 +503,24 @@ class AdminRegistrationView(View):
                 is_superuser=True,
             )
             admin_user.save()
-            messages.success(request, "Admin user registered successfully")
-            return redirect("Login")
+            validation_token = self.verificationToken(5)
+            if validation_token:
+                email_subject = "Activate your account"
+                email_template = 'activate.html'
+                recipient_name = first_name + " " + middle_name + " " + last_name
+                recipient_email = email
+                send_validation_email = self.send_mail(email_subject,email_template,recipient_name,recipient_email,validation_token)
+                if send_validation_email == True:
+                    messages.success(
+                        request, "We sent you an email to verify your account"
+                    )
+                    return redirect("verify")
+                messages.error(request, "Verification email failed, contact admin")
+                self.logger.error(f"Verification email for {email} failed")
+                return redirect("AdminRegistrationView")
+            messages.error(request, "Verification token failed, contact admin")
+            self.logger.error(f"Verification email for {email} failed")
+            return redirect("AdminRegistrationView")
        
         except Exception as e:
             self.logger.error(f"{e}")
