@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="{% static 'plugins/Moment/moment.js' %}"></script>
+<link rel="stylesheet"
+    href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+
+<section class="section">
+    <div class="section-header">
+        <h1>Disposal Request Application Form</h1>
+        <div class="section-header-breadcrumb">
+            <div class="breadcrumb-item active"><a href="{% url 'dashboard' %}">Dashboard</a></div>
+            <div class="breadcrumb-item"><a href="#">New Application</a></div>
+            <div class="breadcrumb-item">New Applications</div>
+        </div>
+    </div>
+    <div class="row bg-white">
+        <div class="col-md-12">
+            {% include 'alert.html' %}
+            <form id="regForm" class="bg-white p-4" method="post" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="disposalNo" id="disposalNo" value="">
+                <input type="hidden" name="myAction" id="myAction" value="insert">
+                <div class="border border-success rounded p-3 my-3">
+                    <p class="text-small text-primary">Disposal Information</p>
+                    <div class="row my-2 gx-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Name Of The Destruction Company<span
+                                    class="text-danger">*</span></label>
+                            <input type="text" class="form-control needs-validation" name="nameOfTheDestructionCompany"
+                                id="nameOfTheDestructionCompany">
+                            <div id="nameOfTheDestructionCompanyerror" style="color: red; display: none;">required
+                                field</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Place Of Disposal <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="placeOfDisposal" id="placeOfDisposal">
+                            <div id="placeOfDisposalerror" style="color: red; display: none;">required field</div>
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col-md-12">
+                            <label class="form-label">Waste Description <span class="text-danger">*</span></label>
+                            <textarea type="text" class="form-control" name="wasteDescription"
+                                id="wasteDescription"></textarea>
+                            <div id="wasteDescriptionError" style="color: red; display: none;">required field</div>
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col-md-12">
+                            <label class="form-label">Reason<span class="text-danger">*</span></label>
+                            <textarea type="text" class="form-control" name="reason" id="reason"></textarea>
+                            <div id="reasonError" style="color: red; display: none;">required field</div>
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col-md-12">
+                            <div class="mb-2">
+                                <div class="form-group">
+                                    <label class="custom-switch mt-2">
+                                        <input type="checkbox" value="True" name="iAgree" id="iAgree"
+                                            class="custom-switch-input" checked>
+                                        <span class="custom-switch-indicator"></span>
+                                        <span class="custom-switch-description">
+                                            I hereby apply for disposal permit and
+                                            declare that all the information herein is correct
+                                            and true.
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary my-3 w-100">Save Application</button>
+            </form>
+
+        </div>
+    </div>
+</section>
+
+<script>
+    const $headerForm = $('#regForm');
+    $(document).ready(function () {
+
+        $headerForm.on('submit', (e) => {
+            e.preventDefault();
+            let nameOfTheDestructionCompany = document.getElementById("nameOfTheDestructionCompany")
+            let placeOfDisposal = document.getElementById("placeOfDisposal")
+            let wasteDescription = document.getElementById("wasteDescription")
+            let reason = document.getElementById("reason")
+            let nameOfTheDestructionCompanyerror = document.getElementById(
+                "nameOfTheDestructionCompanyerror")
+            let placeOfDisposalerror = document.getElementById("placeOfDisposalerror")
+            let wasteDescriptionError = document.getElementById("wasteDescriptionError")
+            let reasonError = document.getElementById("reasonError")
+            nameOfTheDestructionCompany.style.border = "1px solid #28a745"
+            nameOfTheDestructionCompanyerror.style.display = "none"
+            placeOfDisposal.style.border = "1px solid #28a745"
+            placeOfDisposalerror.style.display = "none"
+            wasteDescription.style.border = "1px solid #28a745"
+            wasteDescriptionError.style.display = "none"
+            reason.style.border = "1px solid #28a745"
+            reasonError.style.display = "none"
+
+            if ($('#nameOfTheDestructionCompany').val() === '') {
+                nameOfTheDestructionCompany.style.border = "1px solid red"
+                nameOfTheDestructionCompanyerror.style.display = "block"
+                // alert('Please fill in all required fields.');
+                return false;
+            } else if ($('#placeOfDisposal').val() === '') {
+                placeOfDisposal.style.border = "1px solid red"
+                placeOfDisposalerror.style.display = "block"
+                return false;
+            } else if ($('#wasteDescription').val() === '') {
+                wasteDescription.style.border = "1px solid red"
+                wasteDescriptionError.style.display = "block"
+                return false
+            } else if ($('#reason').val() === '') {
+                reason.style.border = "1px solid red"
+                reasonError.style.display = "block"
+                return false
+            }
+            $.ajax({
+                type: 'POST',
+                url: '/selfservice/Disposal/',
+                data: {
+                    disposalNo: $("#disposalNo").val(),
+                    nameOfTheDestructionCompany: $('#nameOfTheDestructionCompany').val(),
+                    placeOfDisposal: $('#placeOfDisposal').val(),
+                    wasteDescription: $('#wasteDescription').val(),
+                    reason: $('#reason').val(),
+                    iAgree: $('#iAgree').val(),
+                    myAction: $("#myAction").val(),
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                },
+                success: function (response) {
+                    if (response['response']) {
+
+                        window.location.href = "/selfservice/Disposal/" + response[
+                            'response'] + "/";
+                        iziToast.show({
+                            theme: 'dark',
+                            backgroundColor: '#0974bd',
+                            icon: 'las la-check-circle',
+                            title: response['response'] +
+                                " " +
+                                "created successfully",
+                            position: 'topRight',
+                            progressBarColor: '#F4F6F7',
+                        });
+                        $('#nameOfTheDestructionCompany, #wasteDescription, #reason')
+                            .val(
+                                '');
+                        $('#placeOfDisposal').val('');
+                    } else if (response['error']) {
+                        iziToast.show({
+                            theme: 'dark',
+                            icon: 'las la-exclamation',
+                            title: 'Error',
+                            message: response['error'],
+                            position: 'topRight',
+                            progressBarColor: '#ff0800',
+                        });
+                    }
+                },
+                error: function (error) {
+                    console.log(error)
+                }
+            });
+        });
+    })
+</script>
+{% endblock %}

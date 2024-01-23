@@ -1,0 +1,179 @@
+<section class="mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            {% include 'alert.html' %}
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{res.Veterinary_Classes}}
+                        APPLICATION FORM
+                    </h5>
+                    <form action="{% url 'feedRegistration' res.ProductNo %}" method="POST">
+                        {% csrf_token %}
+                        <div class="border border-success rounded p-3  my-3">
+                            <p class="text-small text-primary">Particulars of the Applicant
+                            </p>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label class="form-label">Company Name </label>
+                                    <input type="text" class="form-control" name="companyName">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Company Address</label>
+                                    <input type="text" class="form-control" name="companyAddress">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Company Country </label>
+                                    <select name="CountryOrigin" class="form-control select2"
+                                        aria-label="Default select example">
+                                        <option selected value="" disabled>--Select--</option>
+                                        {% for res in country %}
+                                        <option value="{{res.Code}}">{{res.Name}}</option>
+                                        {% empty %}
+                                        <option value="KE">KENYA</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <div class="col-md-4">
+                                    <label class="form-label">Company Telephone </label>
+                                    <input type="text" class="form-control" name="companyTel">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Company Fax </label>
+                                    <input type="text" class="form-control" name="companyFax">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Company Email </label>
+                                    <input type="email" class="form-control" name="companyEmail">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="border border-success rounded p-3  my-3">
+                            <p class="text-small text-primary">Particulars of the Product
+                            </p>
+                            <div class="row my-2">
+                                <div class="col-md-12">
+                                    <label class="form-label">Trade Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="prodName" required>
+                                    <div class="form-text">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-2">
+                                        <label class="form-label">Proposed Category <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="proposedCategory">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-2">
+                                        <label class="form-label">CAS Number<span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="casNumber">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <div class="col-md-12">
+                                    <label class="form-label">Other Names</label>
+                                    <textarea class="form-control longText" name="otherNames"></textarea>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="mb-2">
+                                        <label class="form-label">Visual Description <span
+                                                class="text-danger">*</span></label>
+                                        <textarea class="form-control" name="visualDescription" rows="3"></textarea>
+                                        <div class="form-text">Brief description of the physical
+                                            characteristics of the product
+                                            (color, size, shape and other relevant features)</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label">Dosage Form</label>
+                                    <input type="text" class="form-control" name="dosageForm">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Dosages</label>
+                                    <input type="text" class="form-control" name="dosage">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="border border-success rounded p-3  my-3">
+                            <p class="text-small text-primary">Proposed shelf life
+                            </p>
+                            <div class="row my-2">
+                                <h5></h5>
+                                <div class="col-md-6">
+                                    <label class="form-label">Proposed shelf life </label>
+                                    <input type="text" class="form-control" name="proposedShelfLife">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Proposed shelf life (after first opening
+                                        container)</label>
+                                    <input type="text" class="form-control" name="shelfLifeAfterFirstOpening">
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <div class="col-md-12">
+                                    <label class="form-label">Proposed shelf life, shelf life after
+                                        reconstitution</label>
+                                    <input type="text" class="form-control" name="ShelfLifeAfterDilution">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="border border-success rounded p-3  my-3">
+                            <div class="row my-2">
+                                <div class="col-md-12">
+                                    <label class="form-label">Type of closure system for package or
+                                        container</label>
+                                    <input type="text" class="form-control" name="closureSystem">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="mb-2">
+                                        <label class="form-label">Packaging unit(s)<span
+                                                class="text-danger">*</span></label>
+                                        <textarea class="form-control" name="packSize" required
+                                            placeholder="200 ml, 500ml" rows="3"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="" class="form-label">Signatory Name</label>
+                                    <input type="text" class="form-control" name="signatoryName">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="" class="form-label">Signatory Position</label>
+                                    <input type="text" class="form-control" name="signatoryPosition">
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <div class="col-md-12">
+                                    <div class="mb-2 mx-3">
+                                        <input class="form-check-input" type="checkbox" value="True" name="iAgree"
+                                            checked>
+                                        <label class="form-check-label text-primary">
+                                            I hereby apply for registration of
+                                            the product detailed above and
+                                            declare that all the information herein is correct
+                                            and true.
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-info w-100 my-2">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

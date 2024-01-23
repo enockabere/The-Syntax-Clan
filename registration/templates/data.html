@@ -1,0 +1,293 @@
+   <div class="modal fade" tabindex="-1" role="dialog" id="submission">
+       <div class="modal-dialog modal-lg" role="document">
+           <div class="modal-content">
+               <div class="modal-header">
+                   <h5 class="modal-title">{{res.Productname}}-{{res.ProductNo}}</h5>
+               </div>
+               <div class="modal-body">
+                   <div class="row mt-5">
+                       <div class="col-lg-12">
+                           <div class="card">
+                               <div class="card-body">
+                                   <h5 class="card-title">My Submission</h5>
+                                   <div class="row">
+                                       <div class="col-md-12">
+                                           <form>
+                                               <div class="row">
+                                                   <div class="col-md-4 mb-2">
+                                                       <label class="form-label">LTR ID</label>
+                                                       <input type="text" class="form-control" placeholder="{{UserID}}"
+                                                           readonly>
+                                                   </div>
+                                                   <div class="col-md-4 mb-2">
+                                                       <label class="form-label">LTR Name </label>
+                                                       <input type="text" class="form-control" placeholder="{{LTRName}}"
+                                                           readonly>
+                                                   </div>
+                                                   <div class="col-md-4 mb-2">
+                                                       <label class="form-label">LTR Name </label>
+                                                       <input type="text" class="form-control" placeholder="{{LTRName}}"
+                                                           readonly>
+                                                   </div>
+                                                   <div class="col-md-4 mb-2">
+                                                       <label class="form-label">LTR Email </label>
+                                                       <input type="text" class="form-control"
+                                                           placeholder="{{LTR_Email}}" readonly>
+                                                   </div>
+                                                   <div class="col-md-4 mb-2">
+                                                       <label class="form-label">LTR Country </label>
+                                                       <input type="text" class="form-control"
+                                                           placeholder="{{LTRCountry}}" readonly>
+                                                   </div>
+                                                   <div class="col-md-4 mb-2">
+                                                       <label class="form-label">Business No. </label>
+                                                       <input type="text" class="form-control" placeholder="{{LTRBsNo}}"
+                                                           readonly>
+                                                   </div>
+                                               </div>
+                                           </form>
+                                       </div>
+                                   </div>
+                                   <div class="row my-3">
+                                       <div class="col-md-12">
+                                           <div class="h5"> Particulars of the Manufacturer</div>
+                                           <div class="table-responsive">
+                                               <table class="table table-striped data_table">
+                                                   <thead>
+                                                       <tr>
+                                                           <th>Manufacturer Type</th>
+                                                           <th>Manufacturer Name</th>
+                                                           <th>Address</th>
+                                                           <th>Country</th>
+                                                           <th>Telephone</th>
+                                                           <th>Email</th>
+                                                           <th>GMP NO</th>
+                                                           <th>Activity</th>
+                                                           <th>Action</th>
+                                                       </tr>
+                                                   </thead>
+                                                   <tbody>
+                                                       {% for res in manufacturer %}
+                                                       <tr>
+                                                           <td>{{res.Type_of_Manufacture}}</td>
+                                                           <td>{{res.Manufacture_Company_Name_}}</td>
+                                                           <td>{{res.Manufacturing_plant_address}}</a></td>
+                                                           <td>{{res.Country}}</a></td>
+                                                           <td>{{res.Telephone}}</a></td>
+                                                           <td>{{res.Email}}</a></td>
+                                                           <td>{{res.GMP_No}}</a></td>
+                                                           <td>{{res.Activity}}</td>
+                                                           <td>
+                                                               <a href="#" data-bs-toggle="tooltip"
+                                                                   data-bs-placement="top" title="Delete"><i
+                                                                       class="fas fa-trash-alt text-danger"></i>
+                                                               </a>
+                                                           </td>
+                                                       </tr>
+                                                       {% endfor %}
+                                                   </tbody>
+                                               </table>
+                                           </div>
+                                       </div>
+                                   </div>
+                                   <div class="row my-3">
+                                       <div class="col-md-12">
+                                           <h5>
+                                               Product Details
+                                           </h5>
+                                       </div>
+                                       <div class="col-md-4 mb-2">
+                                           <label class="form-label">ProductNo</label>
+                                           <input type="text" class="form-control" placeholder="{{res.ProductNo}}"
+                                               readonly>
+                                       </div>
+                                       <div class="col-md-4 mb-2">
+                                           <label class="form-label">Product Name </label>
+                                           <input type="text" class="form-control" placeholder="{{res.Productname}}"
+                                               readonly>
+                                       </div>
+                                       <div class="col-md-4 mb-2">
+                                           <label class="form-label">Product Class </label>
+                                           <input type="text" class="form-control"
+                                               placeholder="{{res.Veterinary_Classes}}" readonly>
+                                       </div>
+                                       <div class="col-md-4 mb-2">
+                                           <label class="form-label">Types Of Manufacturers</label>
+                                           <input type="text" class="form-control"
+                                               placeholder="{{res.Types_Of_Manufacturers}}" readonly>
+                                       </div>
+                                       <div class="col-md-4 mb-2">
+                                           <label class="form-label">Status</label>
+                                           <input type="text" class="form-control" placeholder="{{res.Status}}"
+                                               readonly>
+                                       </div>
+                                       <div class="col-md-4 mb-2">
+                                           <label class="form-label">Document Date</label>
+                                           <input type="text" class="form-control" placeholder="{{res.Document_Date}}"
+                                               readonly>
+                                       </div>
+
+                                       <div class="col-md-4 mb-2">
+                                           <label class="form-label">Type of Review</label>
+                                           <input type="text" class="form-control" placeholder="{{res.Type_of_Review}}"
+                                               readonly>
+                                       </div>
+                                       <div class="col-md-4 mb-2">
+                                           <label class="form-label">Paid</label>
+                                           <input type="text" class="form-control" placeholder="{{res.Paid}}" readonly>
+                                       </div>
+                                       <div class="col-md-4 mb-2">
+                                           <label class="form-label">Amount Payable</label>
+                                           <input type="text" class="form-control"
+                                               placeholder="{{res.Currency_Code}} {{res.Amount_Payable}}" readonly>
+                                       </div>
+                                   </div>
+                                   <div class="row my-3">
+                                       <div class="col-md-12">
+                                           <h5>Product Ingredients</h5>
+                                           <div class="table-responsive">
+                                               <table class="table table-striped data_table">
+                                                   <thead>
+                                                       <tr>
+                                                           <th>Name</th>
+                                                           <th>Ingredient Type</th>
+                                                           <th>Quantity per dose</th>
+                                                           <th>Strength</th>
+                                                           <th>Molecular Formula</th>
+                                                           <th>Molecular Weight</th>
+                                                           <th>Proportion</th>
+                                                           <th>Specification</th>
+                                                           <th>Reason For Inclusion</th>
+                                                           <th>Action</th>
+                                                       </tr>
+                                                   </thead>
+                                                   <tbody>
+                                                       {% for res in ingredient %}
+                                                       <tr>
+                                                           <td>{{res.Ingredient_Name}}</td>
+                                                           <td>{{res.Ingredient_Type}}</td>
+                                                           <td>{{res.Quantity_per_dose}}</td>
+                                                           <td>{{res.Strength_of_Active_Ingredients__AI__per_unit_dosage_}}
+                                                           </td>
+                                                           <td>{{res.Molecular_and_structural_formula}}</td>
+                                                           <td>{{res.Molecular_weight_for_each_active_ingredient_}}
+                                                           </td>
+                                                           <td>{{res.Proportion}}</td>
+                                                           <td>{{res.Specification_of_purity_of_the_active_substance_}}
+                                                           </td>
+                                                           <td>{{res.Reason_For_Inclusion}}</td>
+                                                           <td><a href="#" data-bs-toggle="tooltip"
+                                                                   data-bs-placement="top" title="Delete"><i
+                                                                       class="fas fa-trash-alt text-danger"></i>
+                                                               </a>
+                                                           </td>
+                                                       </tr>
+                                                       {% endfor %}
+                                                   </tbody>
+                                               </table>
+                                           </div>
+                                       </div>
+                                   </div>
+                                   <div class="row my-3">
+                                       <div class="col-md-12">
+                                           <h5>
+                                               Marketing Authorisation in the country of origin and other countries
+                                           </h5>
+                                           <div class="table-responsive">
+                                               <table class="table table-striped data_table">
+                                                   <thead>
+                                                       <tr>
+                                                           <th>Manufacturer Type</th>
+                                                           <th>Manufacturer Name</th>
+                                                           <th>Address</th>
+                                                           <th>Country</th>
+                                                           <th>Telephone</th>
+                                                           <th>Email</th>
+                                                           <th>GMP NO</th>
+                                                           <th>Activity</th>
+                                                           <th>Action</th>
+                                                       </tr>
+                                                   </thead>
+                                                   <tbody>
+                                                       {% for res in manufacturer %}
+                                                       <tr>
+                                                           <td>{{res.Type_of_Manufacture}}</td>
+                                                           <td>{{res.Manufacture_Company_Name_}}</td>
+                                                           <td>{{res.Manufacturing_plant_address}}</a></td>
+                                                           <td>{{res.Country}}</a></td>
+                                                           <td>{{res.Telephone}}</a></td>
+                                                           <td>{{res.Email}}</a></td>
+                                                           <td>{{res.GMP_No}}</a></td>
+                                                           <td>{{res.Activity}}</td>
+                                                           <td>
+                                                               <a href="#" data-bs-toggle="tooltip"
+                                                                   data-bs-placement="top" title="Delete"><i
+                                                                       class="fas fa-trash-alt text-danger"></i>
+                                                               </a>
+                                                           </td>
+                                                       </tr>
+                                                       {% endfor %}
+                                                   </tbody>
+                                               </table>
+                                           </div>
+                                       </div>
+                                   </div>
+                                   <div class="row my-3">
+                                       <div class="col-md-12">
+                                           <h5>Additives/Impurities</h5>
+                                           <div class="table-responsive">
+                                               <table class="table table-striped data_table">
+                                                   <thead>
+                                                       <tr>
+                                                           <th>Name</th>
+                                                           <th>Proportion</th>
+                                                           <th>Specification</th>
+                                                           <th>Action</th>
+                                                       </tr>
+                                                   </thead>
+                                                   <tbody>
+                                                       {% for res in additive %}
+                                                       <tr>
+                                                           <td>{{res.Ingredient_Name_Addictives_}}</td>
+                                                           <td>{{res.Proportion_e_g_____ppm_units__Addictives_}}
+                                                           </td>
+                                                           <td>{{res.Purpose_of_use__Addictives_}}</td>
+                                                           <td><a href="#" data-bs-toggle="tooltip"
+                                                                   data-bs-placement="top" title="Delete"><i
+                                                                       class="fas fa-trash-alt text-danger"></i>
+                                                               </a>
+                                                           </td>
+                                                       </tr>
+                                                       {% endfor %}
+                                                   </tbody>
+                                               </table>
+                                           </div>
+                                       </div>
+                                   </div>
+                                   <div class="row my-3">
+                                       <h5>My Attachments</h5>
+                                       {% for data in files %}
+                                       <div class="col-md-2">
+                                           <div class="document">
+                                               <div class="document-body">
+                                                   <i class="bi bi-file-earmark-check-fill text-success"></i>
+                                               </div>
+                                               <div class="document-footer">
+                                                   <span class="document-name">
+                                                       {{data.File_Name}}.{{data.File_Extension}}
+                                                   </span>
+                                                   <span class="document-description"> Date Attached:
+                                                       {{data.Attached_Date}} </span>
+                                               </div>
+                                           </div>
+                                       </div>
+                                       {% endfor %}
+                                   </div>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+           </div>
+       </div>
+   </div>

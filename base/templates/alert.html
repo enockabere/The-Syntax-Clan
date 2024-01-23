@@ -1,0 +1,38 @@
+{% if messages %}
+{% for message in messages %}
+{% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+<script>
+    iziToast.show({
+        theme: 'dark',
+        backgroundColor: '#ff6022',
+        icon: 'las la-check-circle',
+        title: '{{message}}',
+        position: 'topRight',
+        progressBarColor: '#F4F6F7',
+    });
+</script>
+{% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+<script>
+    iziToast.show({
+        theme: 'dark',
+        backgroundColor: '#3abaf4',
+        icon: 'las la-exclamation',
+        title: '{{message}}',
+        position: 'topRight',
+        progressBarColor: '#F4F6F7',
+    });
+</script>
+{% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+<script>
+    iziToast.show({
+        theme: 'dark',
+        backgroundColor: '#000',
+        icon: 'las la-exclamation-circle',
+        title: '{{message}}',
+        position: 'topRight',
+        progressBarColor: '#F4F6F7',
+    });
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}

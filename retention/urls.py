@@ -1,0 +1,87 @@
+from django.urls import path
+
+from . import views
+
+urlpatterns = [
+    path("retention/", views.registrationRetention.as_view(), name="retention"),
+    path(
+        "retention/<str:pk>/",
+        views.RetentionDetails.as_view(),
+        name="retentionDetails",
+    ),
+    path(
+        "retentionGateway/<str:pk>",
+        views.retentionGateway.as_view(),
+        name="retentionGateway",
+    ),
+    path(
+        "SubmitRetention/<str:pk>/",
+        views.SubmitRetention.as_view(),
+        name="SubmitRetention",
+    ),
+    path(
+        "makeRetentionPayment/",
+        views.makeRetentionPayment.as_view(),
+        name="makeRetentionPayment",
+    ),
+    path(
+        "FNGenerateRetentionInvoice/",
+        views.FNGenerateRetentionInvoice.as_view(),
+        name="FNGenerateRetentionInvoice",
+    ),
+    path(
+        "PrintRentetionCertificate/<str:pk>/",
+        views.PrintRentetionCertificate.as_view(),
+        name="PrintRentetionCertificate",
+    ),
+    path(
+        "BulkRetention/",
+        views.BulkRetention.as_view(),
+        name="BulkRetention",
+    ),
+    path(
+        "bulk/<str:pk>/",
+        views.BulkDetails.as_view(),
+        name="BulkDetails",
+    ),
+    path(
+        "MyRetentions/",
+        views.MyRetentions.as_view(),
+        name="MyRetentions",
+    ),
+    path(
+        "BulkProducts/<str:pk>/",
+        views.BulkProducts.as_view(),
+        name="BulkProducts",
+    ),
+    path(
+        "bulk_customer/",
+        views.bulk_customer.as_view(),
+        name="bulk_customer",
+    ),
+    path(
+        "bulk_invoice/",
+        views.BulkInvoice.as_view(),
+        name="BulkInvoice",
+    ),
+    path(
+        "retention_cert/<str:pk>/",
+        views.RetentionCert.as_view(),
+        name="RetentionCert",
+    ),
+    path(
+        "retention_receipt/",
+        views.RetentionReceipt.as_view(),
+        name="RetentionReceipt",
+    ),
+    path(
+        "BulkCerts/<str:pk>/",
+        views.BulkCerts.as_view(),
+        name="BulkCerts",
+    ),
+    path(
+        "normal_customer/",
+        views.normal_customer.as_view(),
+        name="normal_customer",
+    ),
+]

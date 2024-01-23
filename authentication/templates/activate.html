@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 10px;
+        }
+
+        .signature {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .logo {
+            max-width: 150px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <p>Hi {{user}},</p>
+        <div class="message">
+            <p>Thanks for creating an account with us! Please use the Verification Code below to verify your account.
+            </p>
+
+            <p>Verification Code: {{Secret}}</p>
+        </div>
+        <p class="signature">Best regards,<br>The Syntax Clan</p>
+    </div>
+</body>
+
+</html>

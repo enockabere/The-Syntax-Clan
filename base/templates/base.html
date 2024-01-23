@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1">
+    <title>VMD</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="{% static 'assets/modules/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/modules/fontawesome/css/all.min.css' %}" rel="stylesheet">
+
+
+    <!-- Data Tables -->
+
+    <link rel="stylesheet" href="{% static 'assets/modules/datatables/datatables.min.css' %}">
+    <link rel="stylesheet"
+        href="{% static 'assets/modules/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/modules/datatables/Select-1.2.4/css/select.bootstrap4.min.css' %}">
+
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/components.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/modules/summernote/summernote-bs4.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/iziToast-master/dist/css/iziToast.min.css' %}">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="{% static 'img/logo/logo.png' %}" />
+</head>
+
+<body>
+    <div id="app">
+        <div class="main-wrapper main-wrapper-1">
+            <!--Header-->
+            {% include 'navbar.html' %}
+            <!-- End Header -->
+            <!-- Sidebar-->
+            {% include 'sidebar.html' %}
+            <!-- End Sidebar -->
+
+            <div class="main-content">
+                {% block base %}
+                {% endblock %}
+            </div>
+            {% include 'footer.html' %}
+        </div>
+    </div>
+    <!-- General JS -->
+    <script src="{% static 'assets/modules/jquery.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'assets/modules/popper.js' %}" type="text/javascript"></script>
+    <script src="{% static 'assets/modules/tooltip.js' %}" type="text/javascript"></script>
+    <script src="{% static 'assets/modules/bootstrap/js/bootstrap.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'assets/modules/nicescroll/jquery.nicescroll.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'assets/modules/moment.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'assets/js/stisla.js' %}" type="text/javascript"></script>
+
+    <!-- Data Tables -->
+    <script src="{% static 'assets/modules/datatables/datatables.min.js' %}"></script>
+    <script src="{% static 'assets/modules/datatables/DataTables-1.10.16/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'assets/modules/datatables/Select-1.2.4/js/dataTables.select.min.js' %}"></script>
+    <script src="{% static 'assets/modules/jquery-ui/jquery-ui.min.js' %}"></script>
+    <script src="{% static 'plugins/iziToast-master/dist/js/iziToast.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'assets/modules/chart.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'assets/modules/summernote/summernote-bs4.js' %}" type="text/javascript"></script>
+    <script src="{% static 'assets/modules/chocolat/dist/js/jquery.chocolat.min.js' %}" type="text/javascript"></script>
+
+    <!-- Page Specific JS File -->
+    <script src="{% static 'assets/js/page/modules-datatables.js' %}" type="text/javascript"></script>
+    <script src="{% static 'assets/js/page/index-0.js' %}" type="text/javascript"></script>
+
+
+    <!-- Custom JS -->
+    <script src="{% static 'assets/js/scripts.js' %}" type="text/javascript"></script>
+    <script src="{% static 'assets/js/custom.js' %}" type="text/javascript"></script>
+    <script>
+        $(document).ready(function () {
+            const currentYear = new Date().getFullYear();
+            $('#currentYear').empty().append(currentYear)
+        })
+    </script>
+</body>
+
+</html>

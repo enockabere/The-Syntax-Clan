@@ -1,0 +1,978 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.12.313/pdf.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="{% static 'plugins/Moment/moment.js' %}"></script>
+<link rel="stylesheet"
+    href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+<section class="section">
+    <div class="section-header">
+        <h1>Bulk Retention Application</h1>
+        <div class="section-header-breadcrumb">
+            <div class="breadcrumb-item active"><a href="{% url 'dashboard' %}">Dashboard</a></div>
+            <div class="breadcrumb-item"><a href="{% url 'MyRetentions' %}">My Applications</a></div>
+            <div class="breadcrumb-item">Bulk Retention {{res.Retension_No_}}</div>
+        </div>
+    </div>
+    <div class="section-body">
+        <div class="row" id="ApplicationRow">
+            <div class="col-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h4 id="other_professionals">{{res.Veterinary_Classes}} PRODUCTS</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div id="stepTwo" class="bg-white p-4" style="display: none">
+                                    <div class="border border-success rounded p-3  my-3">
+                                        <div class="premise_data" id="premise_data">
+                                            <div class="money-spinner mx-auto text-center" id="spinner2"
+                                                style="display: none;">
+                                                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif"
+                                                    alt="Loading Gif" style="height: 70px; width: 100px;"
+                                                    class="img-fluid">
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center my-3">
+                                                <button class="btn btn-primary" id="addPermitLine"><i
+                                                        class="las la-plus"></i> Add
+                                                    Products</button>
+                                            </div>
+                                            <div class="table-responsive">
+                                                <table id="ProfessionalsTable"
+                                                    class="table w-100 table-striped dt-responsive table-responsive-lg table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Product No.</th>
+                                                            <th>Product Name</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <form method="POST" id="ProfessionalsForm" style="display: none;">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="myAction" id="Professionals_my_action"
+                                                    value="insert">
+                                                <div class="row my-3 gx-2">
+                                                    <div class="col-md-12">
+                                                        <label class="form-label">Product <span
+                                                                class="text-danger">*</span></label>
+                                                        <select class="form-control" aria-label="Default select example"
+                                                            name="prodNo" id="prodNo">
+                                                            <option selected value="0" disabled>--select--</option>
+                                                            {% for product in products %}
+                                                            <option value="{{product.ProductNo}}">
+                                                                {{product.Productname}}
+                                                            </option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="money-spinner mx-auto text-center" id="spinner1"
+                                                    style="display: none;">
+                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif"
+                                                        alt="Loading Gif" style="height: 100px; width: 100px;"
+                                                        class="img-fluid">
+                                                </div>
+                                                <div class="d-flex gap-3">
+                                                    <button type="submit" id='submit_line'
+                                                        class="btn btn-primary mr-1 my-2 w-100">Save
+                                                        Line</button>
+                                                    <button type="button" class="btn btn-info my-2 ml-1 w-50"
+                                                        id="hidePermitLine"> <i class="las la-eye"></i> View
+                                                        Lines</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="w-100">
+                                        <div id="Professionals_btn" style="margin: auto; width: fit-content;">
+                                            <button class="btn btn-warning" id="ProfessionalsNext">Next Step <i
+                                                    class="las la-angle-double-right"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="stepFour" id="stepFour" style="display: none">
+                                    <div class="row m-0">
+                                        <div class="col-md-12 bg-white my-2">
+                                            <div class="d-flex justify-content-end align-items-center my-3">
+                                                <div class="money-spinner mx-auto text-center" id="spinner4"
+                                                    style="display: none;">
+                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif"
+                                                        alt="Loading Gif" style="height: 70px; width: 100px;"
+                                                        class="img-fluid">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div id="pdfContainer" style="min-height: 600px">
+                                                <!-- The PDF will be displayed here -->
+                                            </div>
+                                            <div class="row box-right">
+                                                <div class="col-md-8 ps-0 ">
+                                                    <h4 class="my-3"><span id="payment_state" class="text-warning">Total
+                                                            to Pay </span></h4>
+                                                    <p class="h1 fw-bold d-flex"> <span
+                                                            class="las la-coins textmuted pe-1 h6 align-text-top mt-2"></span>
+                                                        <span class="pesa_paid"> <span
+                                                                class="pesa_currency">{{res.Currency_Code}}</span> <span
+                                                                class="pesa_money">{{res.Amount_Payable}}</span>
+                                                        </span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="money-spinner mx-auto text-center" id="spinner6"
+                                                style="display: none;">
+                                                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif"
+                                                    alt="Loading Gif" style="height: 70px; width: 100px;"
+                                                    class="img-fluid">
+                                            </div>
+                                            <hr>
+
+                                            <div class="text-md-right">
+                                                <div class="float-lg-left mb-lg-0 mb-3">
+                                                    <button class="btn btn-secondary btn-icon icon-left"
+                                                        id="paymentPrev"><i class="las la-angle-double-left"></i>
+                                                        Prev
+                                                        Step</button>
+                                                </div>
+                                                <form method="post" id="processPayment">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="bill_desc" id="bill_desc"
+                                                        value="{{res.Veterinary_Classes}}">
+                                                    <input type="hidden" name="currency" id="bill_currency"
+                                                        value="{{res.Currency_Code}}">
+                                                    <input type="hidden" name="bill_ref_number" id="bill_ref_number"
+                                                        value="{{res.Retension_No_}}">
+                                                    <input type="hidden" name="client_name" id="client_name"
+                                                        value="{{res.Signatory_Name}}">
+                                                    <input type="hidden" name="amount_expected" id="amount_expected"
+                                                        value="{{res.Amount_Payable}}">
+                                                    <input type="hidden" name="Veterinary_Classes"
+                                                        id="Veterinary_Classes" value="{{res.Veterinary_Classes}}">
+                                                    <input type="hidden" name="Process" id="Process" value="RETENTION">
+                                                    <input type="hidden" name="Types_Of_Manufacturers"
+                                                        id="Types_Of_Manufacturers" value="None">
+                                                    <button class="btn btn-primary btn-icon icon-left"><i
+                                                            class="fas fa-credit-card"></i> Process Payment</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h4>Downloads</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="money-spinner mx-auto text-center" id="spinner5" style="display: none;">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif"
+                                alt="Loading Gif" style="height: 70px; width: 100px;" class="img-fluid">
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-striped data_table">
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Application Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr id="sales_invoice" style="display: none;">
+                                        <td>{{res.Veterinary_Classes}}</td>
+                                        <td>
+                                            <div class="badge badge-success">{{res.Status}}</div>
+                                        </td>
+                                        <td>
+                                            <form id="sales_invoice_form" method="post">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-info">
+                                                    Download
+                                                    Invoice <i class="las la-download"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% if res.Paid == True  and res.Bulk_Invoice == True %}
+                                    <tr>
+                                        <td>{{res.Veterinary_Classes}}</td>
+                                        <td>
+                                            <div class="badge badge-success">{{res.Status}}</div>
+                                        </td>
+                                        <td>
+                                            <form id="FnGenerateReceipt" method="post">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-info">
+                                                    Download
+                                                    Receipt <i class="las la-download"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+
+                                    {% if res.Paid == True and res.Status == 'Approved' and res.Bulk_Invoice == False %}
+                                    <tr>
+                                        <td>{{res.Veterinary_Classes}}</td>
+                                        <td>
+                                            <div class="badge badge-success">{{res.Status}}</div>
+                                        </td>
+                                        <td>
+                                            <form id="PremiseCertForm" method="post">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-info">
+                                                    Download
+                                                    Certificate <i class="las la-download"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3" id="submitted_pros" style="display: none;">
+            <div class="col-md-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h4>{{res.Veterinary_Classes}} PRODUCTS</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped data_table">
+                                <thead>
+                                    <tr>
+                                        <th>Product No.</th>
+                                        <th>Product Name</th>
+                                        {% if res.Paid == True and res.Status == 'Approved' %}
+                                        <th>Action</th>
+                                        {% endif %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for line in lines %}
+                                    <tr>
+                                        <td>{{line.ProductNo}}</td>
+                                        <td>{{line.Productname}}</td>
+                                        {% if res.Paid == True and res.Status == 'Approved' %}
+                                        <td>
+                                            <form action="{% url 'BulkCerts' line.ProductNo %}" method="post">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="redirect_id" value="{{res.Retension_No_}}">
+                                                <button type="submit" class="btn btn-info btn-action"
+                                                    data-toggle="tooltip" title="Download">
+                                                    Download Certificate <i class="las la-download"></i></button>
+                                            </form>
+                                        </td>
+                                        {% endif %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h4>Bulk Retention {{res.Retension_No_}} Details</h4>
+                    </div>
+                    <div class="card-body">
+                        <form action="{% url 'BulkRetention' %}" class="bg-white p-4" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="retNo" value="{{res.Retension_No_}}">
+                            <input type="hidden" name="myAction" id="myAction" value="modify">
+                            <input type="hidden" name="iAgree" value="True">
+                            <div class="border border-success rounded p-3 my-3">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Applicant Name </label>
+                                        <input type="text" class="form-control" name="signatoryName" id="signatoryName"
+                                            value="{{res.Name_of_the_Applicant_}}" disabled>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Position in the Company <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="signatoryPosition"
+                                            value="{{res.Signatory_Position_In_the_Company}}" id="signatoryPosition"
+                                            disabled>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Veterinary Class</label>
+                                        <input type="text" class="form-control" value="{{res.Veterinary_Classes}}"
+                                            name="veterinaryClass" readonly>
+                                    </div>
+                                </div>
+                                <div class="row my-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Year Of Retention <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-control" aria-label="Default select example"
+                                            name="yearOfRetention" id="yearOfRetention" disabled>
+                                            {% for year in years %}
+                                            <option value="{{year.Year}}" {% if year.Year == res.Year_Of_Retention %}
+                                                selected {% endif %}>
+                                                {{year.Year}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Invoiced</label>
+                                        <input type="text" class="form-control" value="{{res.Invoiced}}" disabled>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Amount Payable </label>
+                                        <input type="text" class="form-control" value="{{res.Amount_Payable}}" disabled>
+                                    </div>
+                                    <!-- <div class="col-md-4">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" class="form-control" value="{{user_data.email}}" disabled>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Mobile Number</label>
+                                        <input type="text" class="form-control" value="{{user_data.mobile_number}}"
+                                            disabled>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">ID Number</label>
+                                        <input type="text" class="form-control" value="{{user_data.id_number}}"
+                                            disabled>
+                                    </div> -->
+                                </div>
+                            </div>
+                            {% if res.Application_Stage == 'Not-Submitted' and res.Paid == False and res.Invoiced == False %}
+                            <button type="submit" class="btn btn-primary my-3 w-100" id="edit_header" hidden><i
+                                    class="las la-pen-fancy"></i>
+                                Edit Application
+                                Form</button>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+                {% include 'alert.html' %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    $(document).ready(function () {
+
+        var documentStatus = '{{res.Status}}';
+        var AmountPayable = '{{res.Amount_Payable}}';
+        var document_header = '{{res.Retension_No_}}';
+        var Invoiced = false;
+        var Paid = false;
+        var Document_Stage = '{{res.Application_Stage}}';
+
+        const $stepTwo = $('#stepTwo');
+        const $Professionals_btn = $('#Professionals_btn');
+        const $ProfessionalsNext = $('#ProfessionalsNext');
+        const $ProfessionalsForm = $('#ProfessionalsForm');
+        const $spinner = $('#spinner');
+        const $addPermitLine = $('#addPermitLine')
+        const $ProfessionalsTable = $('#ProfessionalsTable')
+        const $hidePermitLine = $('#hidePermitLine')
+
+        const $FNGenerateInvoice = $('#FNGenerateInvoice');
+        const $stepFour = $('#stepFour');
+        const $paymentPrev = $('#paymentPrev');
+        const $pesa_paid = $('.pesa_paid');
+        const $payment_state = $('#payment_state');
+        const $PremiseCertForm = $('#PremiseCertForm');
+        const $FnGenerateReceipt = $('#FnGenerateReceipt');
+        const $sales_invoice_form = $('#sales_invoice_form');
+        const $edit_header = $('#edit_header');
+        const $ApplicationRow = $('#ApplicationRow');
+        const $submitted_pros = $('#submitted_pros');
+        const $cert_card = $('#cert_card');
+        const $cert_row = $('#cert_row');
+        const $app_card = $('#app_card');
+        const $processPayment = $('#processPayment');
+
+        $addPermitLine.click(() => {
+            const $tablewrapper = $('#ProfessionalsTable_wrapper')
+            $ProfessionalsForm.show(1000)
+            $ProfessionalsTable.hide()
+            $addPermitLine.hide()
+            $tablewrapper.hide()
+        })
+
+        $hidePermitLine.click(() => {
+            const $tablewrapper = $('#ProfessionalsTable_wrapper')
+            $ProfessionalsForm.hide(1000)
+            $ProfessionalsTable.show()
+            $addPermitLine.show()
+            $tablewrapper.fadeIn(2000)
+        })
+
+        if (Document_Stage === 'Not-Submitted') {
+            $('#yearOfRetention').prop('disabled', false);
+            $('#signatoryName').prop('disabled', false);
+            $('#signatoryPosition').prop('disabled', false);
+        }
+        $paymentPrev.click(function () {
+            filter_list(document_header);
+            $stepFour.hide();
+            $stepTwo.show();
+        })
+
+        $ProfessionalsForm.on('submit', (e) => {
+            e.preventDefault();
+            if ($('#prodNo')
+                .val() === '') {
+                alert('Please fill in all required fields.');
+                return false;
+            }
+            $("#spinner1").show();
+            $.ajax({
+                type: 'POST',
+                url: '/selfservice/bulk/' + document_header + "/",
+                data: {
+                    myAction: $("#Professionals_my_action").val(),
+                    prodNo: $('#prodNo').val(),
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                },
+                success: function (response) {
+                    if (response['response']) {
+                        loadProfessionals(document_header);
+                        iziToast.show({
+                            theme: 'dark',
+                            backgroundColor: '#0974bd',
+                            icon: 'las la-check-circle',
+                            title: "Created successfully",
+                            position: 'topRight',
+                            progressBarColor: '#F4F6F7',
+                        });
+                        $(' #prodNo').val('');
+                    } else if (response['error']) {
+                        iziToast.show({
+                            theme: 'dark',
+                            icon: 'las la-exclamation',
+                            title: 'Error',
+                            message: response['error'],
+                            position: 'topRight',
+                            progressBarColor: '#ff0800',
+                        });
+                    }
+                    $("#spinner1").hide();
+                },
+                error: function (error) {
+                    console.log(error)
+                    $("#spinner1").hide();
+                }
+            });
+        });
+
+        $ProfessionalsNext.click(function () {
+            if (Invoiced === false && Paid === false) {
+                $("#spinner2").show();
+                $.ajax({
+                    type: 'POST',
+                    url: '/selfservice/bulk_customer/',
+                    data: {
+                        retentionNo: document_header,
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                    },
+                    success: function (response) {
+                        if (response['response']) {
+                            iziToast.show({
+                                theme: 'dark',
+                                backgroundColor: '#0974bd',
+                                icon: 'las la-check-circle',
+                                title: "Pay" + " " + AmountPayable,
+                                position: 'topRight',
+                                progressBarColor: '#F4F6F7',
+                            });
+                            $stepTwo.hide();
+                            $stepFour.show();
+                            $addPermitLine.hide()
+                            $ProfessionalsForm.hide()
+                            filter_list(document_header);
+                            preview_invoice(document_header);
+                            $("#other_professionals").empty().append("Payment Details")
+                        } else if (response['error']) {
+                            iziToast.show({
+                                theme: 'dark',
+                                icon: 'las la-exclamation',
+                                title: 'Error',
+                                message: response['error'],
+                                position: 'topRight',
+                                progressBarColor: '#ff0800',
+                            });
+                        }
+                        $("#spinner2").hide();
+                    },
+                    error: function (error) {
+                        console.log(error)
+                        $("#spinner2").hide();
+
+                    }
+                });
+            } else {
+                preview_invoice(document_header);
+                $stepTwo.hide();
+                $stepFour.show();
+            }
+        })
+
+        $processPayment.on('submit', (e) => {
+            e.preventDefault();
+            $("#spinner6").show();
+            $.ajax({
+                type: 'POST',
+                url: '/selfservice/PesaflowPaymentView/',
+                data: {
+                    bill_desc: $('#bill_desc').val(),
+                    currency: $('#bill_currency').val(),
+                    bill_ref_number: $('#bill_ref_number').val(),
+                    client_name: $('#client_name').val(),
+                    amount_expected: $('#amount_expected').val(),
+                    Veterinary_Classes: $('#Veterinary_Classes').val(),
+                    Types_Of_Manufacturers: $('#Types_Of_Manufacturers').val(),
+                    Process: $('#Process').val(),
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                },
+                success: function (response) {
+                    console.log(response)
+                    const invoiceLink = response.response_data.invoice_link;
+
+                    window.open(invoiceLink);
+                    $("#spinner6").hide();
+                },
+                error: function (error) {
+                    console.log(error);
+                    $("#spinner6").hide();
+                }
+            });
+        });
+
+
+        $PremiseCertForm.on('submit', (e) => {
+            e.preventDefault();
+            $("#spinner5").show();
+            $.ajax({
+                type: 'POST',
+                url: '/selfservice/retention_cert/' + document_header + '/',
+                data: {
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                },
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function (response) {
+                    const blob_cert = new Blob([response], {
+                        type: 'application/pdf'
+                    });
+                    const urls = window.URL.createObjectURL(blob_cert);
+
+                    // Open the PDF in a new tab
+                    const newTab = window.open();
+                    newTab.document.open();
+                    newTab.document.write('<iframe src="' + urls +
+                        '" width="100%" height="100%"></iframe>');
+                    newTab.document.close();
+
+                    window.URL.revokeObjectURL(urls);
+
+                    iziToast.show({
+                        theme: 'dark',
+                        backgroundColor: '#0974bd',
+                        icon: 'las la-check-circle',
+                        title: 'Downloaded successfully',
+                        position: 'topRight',
+                        progressBarColor: '#F4F6F7',
+                    });
+                    $("#spinner5").hide();
+                },
+                error: function (error) {
+                    console.log(error);
+                    $("#spinner5").hide();
+                    iziToast.show({
+                        theme: 'dark',
+                        backgroundColor: '#E74C3C',
+                        icon: 'las la-times-circle',
+                        title: 'Error',
+                        message: 'An error occurred',
+                        position: 'topRight',
+                        progressBarColor: '#F4F6F7',
+                    });
+                }
+            });
+        });
+
+
+        $FnGenerateReceipt.on('submit', (e) => {
+            e.preventDefault();
+            $("#spinner5").show();
+            $.ajax({
+                type: 'POST',
+                url: '/selfservice/FnGenerateReceipt/' + document_header + '/',
+                data: {
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                },
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function (response) {
+                    const blob_cert = new Blob([response], {
+                        type: 'application/pdf'
+                    });
+                    const urls = window.URL.createObjectURL(blob_cert);
+
+                    // Open the PDF in a new tab
+                    const newTab = window.open();
+                    newTab.document.open();
+                    newTab.document.write('<iframe src="' + urls +
+                        '" width="100%" height="100%"></iframe>');
+                    newTab.document.close();
+
+                    window.URL.revokeObjectURL(urls);
+
+                    iziToast.show({
+                        theme: 'dark',
+                        backgroundColor: '#0974bd',
+                        icon: 'las la-check-circle',
+                        title: 'Downloaded successfully',
+                        position: 'topRight',
+                        progressBarColor: '#F4F6F7',
+                    });
+                    $("#spinner5").hide();
+                },
+                error: function (error) {
+                    console.log(error);
+                    $("#spinner5").hide();
+                    iziToast.show({
+                        theme: 'dark',
+                        backgroundColor: '#E74C3C',
+                        icon: 'las la-times-circle',
+                        title: 'Error',
+                        message: 'An error occurred',
+                        position: 'topRight',
+                        progressBarColor: '#F4F6F7',
+                    });
+                }
+            });
+        });
+
+        $sales_invoice_form.on('submit', (e) => {
+            e.preventDefault();
+            $("#spinner5").show();
+            $.ajax({
+                type: 'POST',
+                url: '/selfservice/bulk_invoice/',
+                data: {
+                    retentionNo: document_header,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                },
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function (response) {
+                    const blob_cert = new Blob([response], {
+                        type: 'application/pdf'
+                    });
+                    const urls = window.URL.createObjectURL(blob_cert);
+
+                    // Open the PDF in a new tab
+                    const newTab = window.open();
+                    newTab.document.open();
+                    newTab.document.write('<iframe src="' + urls +
+                        '" width="100%" height="100%"></iframe>');
+                    newTab.document.close();
+
+                    window.URL.revokeObjectURL(urls);
+
+                    iziToast.show({
+                        theme: 'dark',
+                        backgroundColor: '#0974bd',
+                        icon: 'las la-check-circle',
+                        title: 'Downloaded successfully',
+                        position: 'topRight',
+                        progressBarColor: '#F4F6F7',
+                    });
+                    $("#spinner5").hide();
+                },
+                error: function (error) {
+                    console.log(error);
+                    $("#spinner5").hide();
+                    iziToast.show({
+                        theme: 'dark',
+                        backgroundColor: '#E74C3C',
+                        icon: 'las la-times-circle',
+                        title: 'Error',
+                        message: 'An error occurred',
+                        position: 'topRight',
+                        progressBarColor: '#F4F6F7',
+                    });
+                }
+            });
+        });
+
+
+
+        filter_list(document_header);
+        loadProfessionals(document_header);
+
+        function filter_list(pk) {
+            var query = '/QYRetension'
+            var filter_one = 'Retension_No_'
+            var filter_two = 'User_code'
+
+            $.ajax({
+                url: "/selfservice/filter_list/" + pk,
+                type: "GET",
+                dataType: "json",
+                data: {
+                    query: query,
+                    filter_one: filter_one,
+                    filter_two: filter_two,
+                },
+                success: function (data) {
+                    if (data['success'] == true) {
+                        $('.document_status').empty().append(data['data']['Status']);
+                        $('.Currency').empty().append(data['data']['Currency_Code']);
+                        $('.AmountPayable').empty().append(data['data']['Amount_Payable']);
+
+                        Invoiced = data['data']['Invoiced']
+                        Paid = data['data']['Paid']
+
+                        if (data['data']['Invoiced'] === true) {
+                            $addPermitLine.hide();
+                            $ProfessionalsForm.hide();
+                            $('#sales_invoice').show();
+                            $('.pesa_currency').empty().append(data['data']['Currency_Code'])
+                            $('.pesa_money').empty().append(data['data']['Amount_Payable'])
+                        }
+
+                        if (data['data']['Paid'] === true) {
+                            $payment_state.empty().append("Paid");
+                            $pesa_paid.addClass('text-success');
+                            $processPayment.hide();
+                        }
+                        if (data['data']['Application_Stage'] === 'Not-Submitted' && Invoiced ===
+                            false) {
+                            $stepTwo.show();
+                            $edit_header.prop('disabled', false);
+                            $edit_header.removeAttr("hidden")
+                        } else if (data['data']['Application_Stage'] === 'Not-Submitted' &&
+                            Invoiced === true) {
+                            $stepFour.show();
+                            $stepTwo.hide();
+                            $edit_header.prop('disabled', false);
+                            $edit_header.removeAttr("hidden")
+
+                        } else if (data['data']['Application_Stage'] === 'Submitted') {
+                            $edit_header.prop('disabled', true);
+                            $edit_header.hide()
+                            $ApplicationRow.hide();
+                            $submitted_pros.show();
+                            $ProfessionalsForm.hide();
+                            $stepTwo.hide();
+                            $stepFour.hide();
+                            if (data['data']['Status'] === 'Approved') {
+                                $cert_row.show();
+                            }
+
+                        }
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error:", error);
+                },
+            });
+
+        }
+
+        function handleFormSubmission(form) {
+            event.preventDefault();
+            $("#spinner2").show();
+            $.ajax({
+                url: form.attr('action'),
+                type: form.attr('method'),
+                data: form.serialize(),
+                success: function (response) {
+                    loadProfessionals(document_header);
+                    if (response['response']) {
+                        iziToast.show({
+                            theme: 'dark',
+                            backgroundColor: '#0974bd',
+                            icon: 'las la-check-circle',
+                            message: "deleted",
+                            position: 'topRight',
+                            progressBarColor: '#F4F6F7',
+                        });
+                    } else {
+                        iziToast.show({
+                            theme: 'dark',
+                            icon: 'las la-exclamation',
+                            title: 'Error',
+                            message: response[
+                                'message'],
+                            position: 'topRight',
+                            progressBarColor: '#ff0800',
+                        });
+                    }
+                    $("#spinner2").hide();
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error:", error);
+                    iziToast.show({
+                        theme: 'dark',
+                        icon: 'las la-exclamation',
+                        title: 'Error',
+                        message: 'CSRF verification failed. Request aborted.',
+                        position: 'topRight',
+                        progressBarColor: '#ff0800',
+                    });
+                    $("#spinner2").hide();
+                }
+            });
+        }
+
+
+        function loadProfessionals(pk) {
+            $.ajax({
+                url: "/selfservice/BulkProducts/" + pk + "/",
+                type: "GET",
+                dataType: "json",
+                success: function (data) {
+                    var tableBody = $('#ProfessionalsTable tbody');
+                    tableBody.empty();
+                    for (var i = 0; i < data[1].length; i++) {
+                        var ProductNo = data[1][i].ProductNo;
+                        var Productname = data[1][i].Productname;
+                        var row = $('<tr>');
+                        row.append($('<td>').text(ProductNo));
+                        row.append($('<td>').text(Productname));
+                        if (Document_Stage === 'Not-Submitted' && Invoiced === false && Paid ===
+                            false) {
+                            var form = $('<form>').attr({
+                                method: 'POST',
+                                action: '/selfservice/bulk/' + pk + '/',
+                            }).append('{% csrf_token %}');
+                            var pro_No = $('<input>').attr({
+                                type: 'hidden',
+                                name: 'prodNo',
+                                value: ProductNo
+                            });
+                            var pro_myActionInput = $('<input>').attr({
+                                type: 'hidden',
+                                name: 'myAction',
+                                value: 'delete'
+                            });
+                            var deleteBtn = $('<button>').attr({
+                                type: 'submit',
+                                class: 'btn btn-danger ml-1'
+                            }).html('<i class="fas fa-trash-alt"></i>');
+
+                            var buttonGroup = $('<div class="btn-group mr-2">');
+                            buttonGroup.append(deleteBtn);
+
+                            // Handle form submission
+                            form.submit(function (event) {
+                                handleFormSubmission($(this));
+                            });
+
+                            var td = $('<td>').append(
+                                form.append(
+                                    pro_No,
+                                    pro_myActionInput,
+                                    buttonGroup
+                                )
+                            );
+
+                            row.append(td);
+                        }
+
+                        tableBody.append(row);
+                    }
+                    var submit_line = $('#submit_line');
+
+                    if (tableBody.children().length > 0) {
+                        submit_line.html('<i class="las la-plus"></i> Add More Lines');
+
+                    } else if (tableBody.children().length <= 0) {
+                        submit_line.text('Save');
+                    }
+
+
+                    // initialize DataTables for each table
+                    if (!$.fn.DataTable.isDataTable('#ProfessionalsTable')) {
+                        $('#ProfessionalsTable').DataTable({
+                            "pageLength": 5,
+                            "order": [
+                                [0, "desc"]
+                            ]
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error:", error);
+                },
+            });
+        }
+
+        function preview_invoice(pk) {
+            $.ajax({
+                type: 'POST',
+                url: '/selfservice/bulk_invoice/',
+                data: {
+                    retentionNo: pk,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                },
+                xhrFields: {
+                    responseType: 'blob' // Set the response type to 'blob'
+                },
+                success: function (response) {
+                    const blob = new Blob([response], {
+                        type: 'application/pdf'
+                    });
+                    const url = window.URL.createObjectURL(blob);
+
+                    // Display the PDF in the iframe
+                    const pdfContainer = document.getElementById('pdfContainer');
+                    pdfContainer.innerHTML = '<iframe src="' + url +
+                        '" width="100%" height="600"></iframe>';
+
+                    window.URL.revokeObjectURL(url);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+
+    })
+</script>
+
+{% endblock %}

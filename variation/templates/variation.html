@@ -1,0 +1,559 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+
+<!--Header-->
+{% include 'navbar.html' %}
+<!-- End Header -->
+
+<!-- Sidebar-->
+{% include 'sidebar.html' %}
+<!-- End Sidebar -->
+
+<main id="main" class="main">
+
+    <div class="pagetitle">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Variations</h1>
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Variation</a></li>
+                        <li class="breadcrumb-item active">Variations</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticVariation"
+                            style="float: right;">
+                            <i class="bi bi-plus"></i> Apply Variation</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- End Page Title -->
+
+    <section class="section contact">
+        <div class="row">
+            <div class="col-md-12">
+                {% include 'alert.html' %}
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">My Variations</h5>
+                        <!-- Bordered Tabs Justified -->
+                        <ul class="nav nav-tabs nav-tabs-bordered d-flex" id="borderedTabJustified" role="tablist">
+                            <li class="nav-item flex-fill" role="presentation">
+                                <button class="nav-link w-100 active" id="home-tab" data-bs-toggle="tab"
+                                    data-bs-target="#bordered-justified-home" type="button" role="tab"
+                                    aria-controls="home" aria-selected="true">Open
+                                    ({{openCount}})</button>
+                            </li>
+                            <li class="nav-item flex-fill" role="presentation">
+                                <button class="nav-link w-100" id="pending-tab" data-bs-toggle="tab"
+                                    data-bs-target="#bordered-justified-pending" type="button" role="tab"
+                                    aria-controls="contact" aria-selected="false">Pending Approval
+                                    ({{pendCount}})</button>
+                            </li>
+                            <li class="nav-item flex-fill" role="presentation">
+                                <button class="nav-link w-100" id="profile-tab" data-bs-toggle="tab"
+                                    data-bs-target="#bordered-justified-approved" type="button" role="tab"
+                                    aria-controls="profile" aria-selected="false">Approved
+                                    ({{appCount}})</button>
+                            </li>
+                            <li class="nav-item flex-fill" role="presentation">
+                                <button class="nav-link w-100" id="contact-tab" data-bs-toggle="tab"
+                                    data-bs-target="#bordered-justified-reject" type="button" role="tab"
+                                    aria-controls="contact" aria-selected="false">Rejected
+                                    ({{rejectedCount}})</button>
+                            </li>
+
+                        </ul>
+                        <div class="tab-content pt-2" id="borderedTabJustifiedContent">
+                            <div class="tab-pane fade show active my-4" id="bordered-justified-home" role="tabpanel"
+                                aria-labelledby="home-tab">
+                                <table
+                                    class="display table  table-striped dt-responsive table-responsive-lg table-bordered datatable">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Variation No</th>
+                                            <th scope="col">Product No</th>
+                                            <th scope="col">Product Name</th>
+                                            <th scope="col">Product Class</th>
+                                            <th scope="col">Amount Payable</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for res in open %}
+                                        <tr>
+                                            <td>{{res.Variation_No_}}</td>
+                                            <td>{{res.ProductNo}}</td>
+                                            <td>{{res.Product_name}}</td>
+                                            <td>{{res.Veterinary_Classes}}</td>
+                                            <td>
+                                                <span class="text-primary"
+                                                    style="margin-right: 2px;">{{res.Currency_Code}}</span>{{res.Amount}}
+                                            </td>
+                                            <td><span class="badge bg-success">{{res.Status}}</span></td>
+                                            <td>
+                                                <div class="d-grid gap-1 d-md-flex justify-content">
+                                                    <button class="btn btn-secondary me-sm-2" type="button"
+                                                        data-toggle="tooltip" data-placement="top" title="edit"
+                                                        data-bs-toggle="modal" data-bs-target="#editVariation">Edit <i
+                                                            class="bi bi-pencil-square"></i></button>
+                                                    <a href="{% url 'variationDetails' res.Variation_No_ %}"
+                                                        type="button" class="btn btn-success">Next <i
+                                                            class="bi bi-chevron-double-right"></i>
+                                                    </a>
+                                                </div>
+                                                <div class="modal fade" id="editVariation" data-bs-backdrop="static"
+                                                    data-bs-keyboard="false" tabindex="-1"
+                                                    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                    <div
+                                                        class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title text-white"
+                                                                    id="exampleModalLabel">Edit
+                                                                    Variation {{res.Variation_No_}}
+                                                                </h5>
+                                                                <button type="button" class="btn-close"
+                                                                    data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <form action="{% url 'variation' %}"
+                                                                            method="POST">
+                                                                            {% csrf_token %}
+                                                                            <input type="hidden" name="varNo"
+                                                                                value="{{res.Variation_No_}}">
+                                                                            <input type="hidden" name="myAction"
+                                                                                value="modify">
+                                                                            <div class="row my-2">
+                                                                                <div class="col-md-12">
+                                                                                    <label for=""
+                                                                                        class="form-label">Product</label>
+                                                                                    <select class="form-select"
+                                                                                        name="prodNo" required>
+                                                                                        <option value="0" disabled
+                                                                                            selected>--Select Product--
+                                                                                        </option>
+                                                                                        {% for res in product %}
+                                                                                        <option
+                                                                                            value="{{res.ProductNo}}">
+                                                                                            {{res.Productname}}
+                                                                                        </option>
+                                                                                        {% endfor %}
+                                                                                    </select>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row my-2">
+                                                                                <div class="col-md-12">
+                                                                                    <label class="form-label">Dosage
+                                                                                        form</label>
+                                                                                    <input type="text"
+                                                                                        class="form-control"
+                                                                                        name="dosageForms">
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row my-2">
+                                                                                <div class="col-md-12">
+                                                                                    <label class="form-label">Type of
+                                                                                        change(s)</label>
+                                                                                    <textarea
+                                                                                        class="form-control longText"
+                                                                                        name="typeofChange"></textarea>
+                                                                                    <div class="form-text">State which
+                                                                                        type of Variation</div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row my-2">
+                                                                                <div class="col-md-12">
+                                                                                    <div class="form-label">Other
+                                                                                        Application(s)</div>
+                                                                                    <textarea
+                                                                                        class="form-control longText"
+                                                                                        name="otherApplications"></textarea>
+                                                                                    <div class="form-text">(
+                                                                                        Provide brief information on any
+                                                                                        ongoing
+                                                                                        variation or
+                                                                                        other variation(s) submitted in
+                                                                                        parallel, or renewal
+                                                                                        application(s), or
+                                                                                        line-extension(s))</div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row my-2">
+                                                                                <div class="col-md-12">
+                                                                                    <label
+                                                                                        class="form-label">Scope</label>
+                                                                                    <textarea
+                                                                                        class="form-control longText"
+                                                                                        name="scope"></textarea>
+                                                                                    <div class="form-text">Please
+                                                                                        specify scope of the change(s)
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="col-md-12">
+                                                                                <label class="form-label">Background
+                                                                                    explanation for the proposed
+                                                                                    change(s)
+                                                                                </label>
+                                                                                <textarea class="form-control longText"
+                                                                                    name="background"></textarea>
+                                                                                <div class="form-text"> Give
+                                                                                    brief background explanation for the
+                                                                                    proposed change(s) to
+                                                                                    your marketing authorization as well
+                                                                                    as a justification in case of
+                                                                                    consequential
+                                                                                    change(s)</div>
+                                                                            </div>
+                                                                            <div class="row my-2">
+                                                                                <h5></h5>
+                                                                                <div class="col-md-6">
+                                                                                    <label class="form-label">Present
+                                                                                    </label>
+                                                                                    <textarea
+                                                                                        class="form-control longText"
+                                                                                        name="present"></textarea>
+                                                                                    <div class="form-text"> (Please
+                                                                                        specify precise present wording
+                                                                                        or specification)</div>
+                                                                                </div>
+                                                                                <div class="col-md-6">
+                                                                                    <label class="form-label">Proposed
+                                                                                    </label>
+                                                                                    <textarea
+                                                                                        class="form-control longText"
+                                                                                        name="proposed"></textarea>
+                                                                                    <div class="form-text">Please
+                                                                                        specify precise proposed wording
+                                                                                        or specification)</div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <hr class="dropdown-divider">
+                                                                            <div class="row">
+                                                                                <div class="col-md-6">
+                                                                                    <label for=""
+                                                                                        class="form-label">Signatory
+                                                                                        Name</label>
+                                                                                    <input type="text"
+                                                                                        class="form-control"
+                                                                                        name="signatoryName">
+                                                                                </div>
+                                                                                <div class="col-md-6">
+                                                                                    <label for=""
+                                                                                        class="form-label">Signatory
+                                                                                        Position</label>
+                                                                                    <input type="text"
+                                                                                        class="form-control"
+                                                                                        name="signatoryPosition">
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row my-2">
+                                                                                <div class="col-md-12">
+                                                                                    <div class="mb-2">
+                                                                                        <input class="form-check-input"
+                                                                                            type="checkbox" value="True"
+                                                                                            name="iAgree" checked>
+                                                                                        <label
+                                                                                            class="form-check-label text-primary">
+                                                                                            I hereby apply for
+                                                                                            registration of
+                                                                                            the product detailed above
+                                                                                            and
+                                                                                            declare that all the
+                                                                                            information herein
+                                                                                            is correct
+                                                                                            and true.
+                                                                                        </label>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <button type="button" class="btn btn-danger"
+                                                                                data-bs-dismiss="modal">Close</button>
+                                                                            <button type="submit"
+                                                                                class="btn btn-success my-2">Submit</button>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tab-pane fade my-4" id="bordered-justified-pending" role="tabpanel"
+                                aria-labelledby="contact-tab">
+                                <table
+                                    class="display table w-100  table-striped dt-responsive table-responsive-lg table-bordered datatable">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Variation No</th>
+                                            <th scope="col">Product No</th>
+                                            <th scope="col">Product Name</th>
+                                            <th scope="col">Product Class</th>
+                                            <th scope="col">Amount Payable</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for res in pending %}
+                                        <tr>
+                                            <td>{{res.Variation_No_}}</td>
+                                            <td>{{res.ProductNo}}</td>
+                                            <td>{{res.Product_name}}</td>
+                                            <td>{{res.Veterinary_Classes}}</td>
+                                            <td>
+                                                <span class="text-primary"
+                                                    style="margin-right: 2px;">{{res.Currency_Code}}</span>{{res.Amount}}
+                                            </td>
+                                            <td><span class="badge bg-success">{{res.Status}}</span></td>
+                                            <td>
+                                                <a href="{% url 'variationDetails' res.Variation_No_ %}" type="button"
+                                                    class="btn btn-info">View <i
+                                                        class="bi bi-chevron-double-right"></i></a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tab-pane fade my-4" id="bordered-justified-approved" role="tabpanel"
+                                aria-labelledby="profile-tab">
+                                <table
+                                    class="display table w-100  table-striped dt-responsive table-responsive-lg table-bordered datatable">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Variation No</th>
+                                            <th scope="col">Product No</th>
+                                            <th scope="col">Product Name</th>
+                                            <th scope="col">Product Class</th>
+                                            <th scope="col">Amount Payable</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for res in approved %}
+                                        <tr>
+                                            <td>{{res.Variation_No_}}</td>
+                                            <td>{{res.ProductNo}}</td>
+                                            <td>{{res.Product_name}}</td>
+                                            <td>{{res.Veterinary_Classes}}</td>
+                                            <td>
+                                                <span class="text-primary"
+                                                    style="margin-right: 2px;">{{res.Currency_Code}}</span>{{res.Amount}}
+                                            </td>
+                                            <td><span class="badge bg-success">{{res.Status}}</span></td>
+                                            <td>
+                                                <a href="{% url 'variationDetails' res.Variation_No_ %}" type="button"
+                                                    class="btn btn-info">
+                                                    View <i class="bi bi-chevron-double-right"></i></a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tab-pane fade my-4" id="bordered-justified-reject" role="tabpanel"
+                                aria-labelledby="contact-tab">
+                                <table
+                                    class="display table w-100  table-striped dt-responsive table-responsive-lg table-bordered datatable">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Variation No</th>
+                                            <th scope="col">Product No</th>
+                                            <th scope="col">Product Name</th>
+                                            <th scope="col">Product Class</th>
+                                            <th scope="col">Amount Payable</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for res in rejected %}
+                                        <tr>
+                                            <td>{{res.Variation_No_}}</td>
+                                            <td>{{res.ProductNo}}</td>
+                                            <td>{{res.Product_name}}</td>
+                                            <td>{{res.Veterinary_Classes}}</td>
+                                            <td>
+                                                <span class="text-primary"
+                                                    style="margin-right: 2px;">{{res.Currency_Code}}</span>{{res.Amount}}
+                                            </td>
+                                            <td><span class="badge bg-success">{{res.Status}}</span></td>
+                                            <td>
+                                                <a href="{% url 'variationDetails' res.Variation_No_ %}" type="button"
+                                                    class="btn btn-info">
+                                                    View <i class="bi bi-chevron-double-right"></i></a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Modal -->
+    <div class="modal fade" id="staticVariation" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog  modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-white" id="exampleModalLabel">Application for
+                        Variation
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <form action="{% url 'variation' %}" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="varNo" value="">
+                                <input type="hidden" name="myAction" value="insert">
+                                <div class="row my-2">
+                                    <div class="col-md-12">
+                                        <label for="" class="form-label">Product</label>
+                                        <select class="form-select" name="prodNo" required>
+                                            <option value="0" disabled selected>--Select Product--</option>
+                                            {% for res in product %}
+                                            <option value="{{res.ProductNo}}">
+                                                {{res.Productname}}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row my-2">
+                                    <div class="col-md-12">
+                                        <label class="form-label">Dosage
+                                            form</label>
+                                        <input type="text" class="form-control" name="dosageForms">
+                                    </div>
+                                </div>
+                                <div class="row my-2">
+                                    <div class="col-md-12">
+                                        <label class="form-label">Type of
+                                            change(s)</label>
+                                        <textarea class="form-control longText" name="typeofChange"></textarea>
+                                        <div class="form-text">State which
+                                            type of Variation</div>
+                                    </div>
+                                </div>
+                                <div class="row my-2">
+                                    <div class="col-md-12">
+                                        <div class="form-label">Other
+                                            Application(s)</div>
+                                        <textarea class="form-control longText" name="otherApplications"></textarea>
+                                        <div class="form-text">(
+                                            Provide brief information on any
+                                            ongoing
+                                            variation or
+                                            other variation(s) submitted in
+                                            parallel, or renewal
+                                            application(s), or
+                                            line-extension(s))</div>
+                                    </div>
+                                </div>
+                                <div class="row my-2">
+                                    <div class="col-md-12">
+                                        <label class="form-label">Scope</label>
+                                        <textarea class="form-control longText" name="scope"></textarea>
+                                        <div class="form-text">Please
+                                            specify scope of the change(s)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label">Background
+                                        explanation for the proposed
+                                        change(s)
+                                    </label>
+                                    <textarea class="form-control longText" name="background"></textarea>
+                                    <div class="form-text"> Give
+                                        brief background explanation for the
+                                        proposed change(s) to
+                                        your marketing authorization as well
+                                        as a justification in case of
+                                        consequential
+                                        change(s)</div>
+                                </div>
+                                <div class="row my-2">
+                                    <h5></h5>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Present
+                                        </label>
+                                        <textarea class="form-control longText" name="present"></textarea>
+                                        <div class="form-text"> (Please
+                                            specify precise present wording
+                                            or specification)</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Proposed
+                                        </label>
+                                        <textarea class="form-control longText" name="proposed"></textarea>
+                                        <div class="form-text">Please
+                                            specify precise proposed wording
+                                            or specification)</div>
+                                    </div>
+                                </div>
+                                <hr class="dropdown-divider">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="" class="form-label">Signatory Name</label>
+                                        <input type="text" class="form-control" name="signatoryName">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="" class="form-label">Signatory Position</label>
+                                        <input type="text" class="form-control" name="signatoryPosition">
+                                    </div>
+                                </div>
+                                <div class="row my-2">
+                                    <div class="col-md-12">
+                                        <div class="mb-2">
+                                            <input class="form-check-input" type="checkbox" value="True" name="iAgree"
+                                                checked>
+                                            <label class="form-check-label text-primary">
+                                                I hereby apply for registration of
+                                                the product detailed above and
+                                                declare that all the information herein
+                                                is correct
+                                                and true.
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-success my-2">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% include 'footer.html' %}
+{% endblock %}

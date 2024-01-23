@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+
+<!--Header-->
+{% include 'navbar.html' %}
+<!-- End Header -->
+
+<!-- Sidebar-->
+{% include 'sidebar.html' %}
+<!-- End Sidebar -->
+
+<main id="main" class="main">
+
+    <div class="pagetitle">
+        <h1>Replacement of Certificates</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'Registration' %}">Register</a></li>
+                <li class="breadcrumb-item active">Replacement of Certificates</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section contact error-404 text-center">
+
+        <div class="row">
+            <div class="col-md-12">
+                <h1>405</h1>
+                <h2>Request not Allowed.</h2>
+                <p>
+                    You must register a product to raise an Replacement request
+                </p>
+                <a class="btn" href="{% url 'Registration' %}">Back to Registration</a>
+            </div>
+        </div>
+
+    </section>
+
+</main>
+
+{% include 'footer.html' %}
+
+{% endblock %}

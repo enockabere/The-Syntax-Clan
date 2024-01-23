@@ -1,0 +1,1295 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="{% static 'plugins/Moment/moment.js' %}"></script>
+<link rel="stylesheet"
+    href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+
+<style>
+    .file-man-box {
+        padding: 10px;
+        border: 1px solid #e3eaef;
+        border-radius: 5px;
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    .file-man-box .file-close {
+        color: #f1556c;
+        position: absolute;
+        line-height: 24px;
+        font-size: 24px;
+        right: 10px;
+        top: 10px;
+        visibility: hidden
+    }
+
+    .file-man-box .file-img-box {
+        line-height: 120px;
+        text-align: center
+    }
+
+    .file-man-box .file-img-box img {
+        height: 64px
+    }
+
+    .file-man-box .file-download {
+        font-size: 30px;
+        color: #98a6ad;
+        position: absolute;
+        bottom: 5px;
+        right: 1px;
+        background: none;
+        border: none;
+    }
+
+    .file-man-box .file-download:hover {
+        color: #313a46
+    }
+
+    .file-man-box .file-man-title {
+        padding-right: 15px
+    }
+
+    .file-man-box:hover {
+        -webkit-box-shadow: 0 0 24px 0 rgba(0, 0, 0, .06), 0 1px 0 0 rgba(0, 0, 0, .02);
+        box-shadow: 0 0 24px 0 rgba(0, 0, 0, .06), 0 1px 0 0 rgba(0, 0, 0, .02)
+    }
+
+    .file-man-box:hover .file-close {
+        visibility: visible
+    }
+
+    .deleteBtn {
+        float: right !important;
+        background: none;
+        outline: none;
+        border: none;
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+    integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+
+<section class="section">
+    <div class="section-header">
+        {% include 'alert.html' %}
+    </div>
+    <div class="section-body" id="main">
+        <div class="row g-2 my-1">
+            <div class="col-md-3">
+                <div class="card h-100 bg-info revenue-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Payment<span> | {{res.Currency_Code}}</span></h5>
+
+                        <div class="d-flex align-items-center">
+                            <div class="ps-3">
+                                <h6>{{res.Currency_Code}} {{res.Amount_Payable}}</h6>
+                                <span class="small pt-2 ps-1">Payment Status:</span>
+                                <span class="small pt-1 fw-bold">{% if res.Paid == True %} Paid {% else %} Not Paid
+                                    {% endif %}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card l-bg-cherry h-100 sales-card">
+                    <div class="card-body">
+                        <h5 class="card-title text-info">Document Stage<span></h5>
+                        <div class="d-flex align-items-center mt-3">
+                            <div class="ps-3">
+                                <h6> {{res.Application_Stage}} </h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if res.Paid == True and res.Status == 'Approved' %}
+            <div class="col-md-3">
+                <div class="card h-100 actionCard text-center">
+                    <i class="bi bi-file-earmark-bar-graph my-3"></i>
+                    <form action="{% url 'GenerateCertificate' res.ProductNo %}" method="post">
+                        {% csrf_token %}
+                        <button class="btn btn-info align-items-center" type="submit"> Generate
+                            Certificate</button>
+                    </form>
+                </div>
+            </div>
+
+            {% elif res.Paid == True and res.Application_Stage == 'Not-Submitted' %}
+            <div class="col-md-3">
+                <div class="card h-100 actionActive actionCard  text-center">
+                    <i class="bi bi-wallet my-3"></i>
+                    <form action="{% url 'SubmitRegistration' res.ProductNo %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-info">
+                            Submit Application
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% elif res.Paid == False and res.Application_Stage == 'Not-Submitted' and res.Invoiced == False and res.Amount_Payable == 0 %}
+            <div class="col-md-3">
+                <div class="card h-100 actionActive actionCard  text-center">
+                    <i class="bi bi-wallet my-3"></i>
+                    <form action="{% url 'SubmitRegistration' res.ProductNo %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-info">
+                            Submit Application
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            {% elif res.Paid == False and res.Application_Stage == 'Not-Submitted' and res.Invoiced == False %}
+            <div class="col-md-3">
+                <div class="card h-100 actionActive actionCard  text-center">
+
+                    <form action="{% url 'makePayment' res.ProductNo %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-info mt-5">
+                            <i class="fas fa-coins"></i> Pay {{res.Currency_Code}} {{res.Amount_Payable}}
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% elif res.Paid == False and res.Application_Stage == 'Not-Submitted' and res.Invoiced == True %}
+            <div class="col-md-3">
+                <a href="{% url 'PaymentGateway' res.ProductNo %}">
+                    <div class="card h-100 actionActive actionCard  text-center">
+                        <i class="bi bi-wallet my-3"></i>
+                        Pay {{res.Currency_Code}} {{res.Amount_Payable}}
+                    </div>
+                </a>
+            </div>
+            {% elif res.Paid == True and res.Application_Stage != "Not-Submitted" %}
+            <div class="col-md-3">
+                <div class="card bg-green h-100 sales-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Tracking Number</h5>
+                        <div class="d-flex align-items-center">
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="bi bi-hand-index"></i>
+                            </div>
+                            <div class="ps-3">
+                                <p style="font-size: 13px;"> {{res.Tracking_No_}} </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            {% endif %}
+            <div class="col-md-3">
+                <a href="#" data-toggle="modal" data-target="#submission">
+                    <div class="card h-100 actionCard text-center">
+                        <i class="bi bi-file-earmark-bar-graph my-3"></i>
+                        <h6>My Submission</h6>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        {% if res.Paid == True  %}
+        <div class="row my-3 gx-2">
+            <div class="col-md-12">
+                <div class="card h-100">
+                    <div class="card-header" style="border: none;">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5 class="card-title">Downloads
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped data_table">
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Payment Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if res.Paid == True and res.Status == 'Approved' %}
+                                    <tr>
+                                        <td>Certificate</td>
+                                        <td>{{res.Paid}}</td>
+                                        <td>
+                                            <form action="{% url 'GenerateCertificate' res.ProductNo %}" method="post">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-info">
+                                                    <i class="las la-download"></i> Download
+                                                    Certificate
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                    {% if res.Paid == True %}
+                                    <tr>
+                                        <td>Receipt</td>
+                                        <td>{{res.Paid}}</td>
+                                        <td>
+                                            <form action="{% url 'FnGenerateReceipt' res.ProductNo %}" method="post">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-info">
+                                                    <i class="las la-download"></i> Download
+                                                    Receipt
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% if class == 'VETERINARY DEVICE' %}
+
+        {% else %}
+        <div class="row my-3 gx-2">
+            <div class="col-md-12">
+                <div class="card h-100">
+                    <div class="card-header" style="border: none;">
+                        <div class="row">
+                            <div class="col-md-12 d-flex justify-content-between align-items-center">
+                                {% if res.Application_Stage == 'Not-Submitted' %}
+                                <button type="button" class="btn btn-info" data-toggle="modal"
+                                    data-target="#activeIngredients">
+                                    <i class="fas fa-plus-circle"></i>
+                                    Add New
+                                </button>
+                                {% endif %}
+                                <h5 class="card-title mb-0" style="order: 1;">Ingredients</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped data_table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Ingredient Type</th>
+                                        <th>Quantity per dose</th>
+                                        <th>Strength</th>
+                                        <th>Proportion</th>
+                                        <th>Specification</th>
+                                        <th>Reason For Inclusion</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for res in ingredient %}
+                                    <tr>
+                                        <td>{{res.Ingredient_Name}}</td>
+                                        <td>{{res.Ingredient_Type}}</td>
+                                        <td>{{res.Quantity_per_dose}}</td>
+                                        <td>{{res.Strength_of_Active_Ingredients__AI__per_unit_dosage_}}</td>
+                                        <td>{{res.Proportion}}</td>
+                                        <td>{{res.Specification_of_purity_of_the_active_substance_}}</td>
+                                        <td>{{res.Reason_For_Inclusion}}</td>
+                                        <td>
+                                            <form method="POST" action="{% url 'Ingredients' res.No %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="myAction" value="delete">
+                                                <input type="hidden" name="ingredientType" value="0">
+                                                <input type="hidden" name="ingredientName" value="0">
+                                                <input type="hidden" name="quantityPerDose" value="0">
+                                                <input type="hidden" name="strengthOfIngredient" value="0">
+                                                <input type="hidden" name="Proportion" value="0">
+                                                <input type="hidden" name="ReasonForInclusion" value="0">
+                                                <input type="hidden" name="specification" value="0">
+                                                <input type="hidden" name="specification" value="0">
+                                                <input type="hidden" name="lineNo" value="{{res.Active_Line_No_}}">
+                                                <button type="submit" type="button"><i
+                                                        class="fas fa-trash-alt text-danger"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        <div class="row my-3 gx-2">
+            {% if class == 'VETERINARY DEVICE' %}
+            <div class="col-md-12 mb-3">
+                <div class="card h-100">
+                    <div class="card-header" style="border: none;">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5 class="card-title" style="display:inline-block;float:right ;"> Essential Principles
+                                    and methods used to demonstrate conformity
+                                </h5>
+                                {% if res.Application_Stage == 'Not-Submitted' %}
+                                <div class="inline mt-2" style="display:inline-block;">
+                                    <button type="button" class="btn btn-info" data-toggle="modal"
+                                        data-target="#principles"><i class="fas fa-plus-circle"></i>
+                                        Add New </button>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped data_table">
+                                <thead>
+                                    <tr>
+                                        <th>Essential Principle</th>
+                                        <th>General Method</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for res in method %}
+                                    <tr>
+                                        <td>{{res.Essential_Principle}}</td>
+                                        <td>{{res.General_Method}}</td>
+                                        <td><a href="#" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                title="Delete"><i class="fas fa-trash-alt text-danger"></i> </a></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 mb-3">
+                <div class="card h-100">
+                    <div class="card-header" style="border: none;">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5 class="card-title" style="display:inline-block;float:right ;">
+                                    List of regulatory approval or marketing clearance obtained
+                                </h5>
+                                {% if res.Application_Stage == 'Not-Submitted' %}
+                                <div class="inline mt-2" style="display:inline-block;">
+                                    <button type="button" class="btn btn-info" data-toggle="modal"
+                                        data-target="#regulatory"><i class="fas fa-plus-circle"></i>
+                                        Add New</button>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped data_table">
+                                <thead>
+                                    <tr>
+                                        <th>Regulatory Number</th>
+                                        <th>Regulatory</th>
+                                        <!-- <th scope="col">Action</th> -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for res in Regulatory %}
+                                    <tr>
+                                        <td>{{res.RegulatoryNo}}</td>
+                                        <td>{{res.Regulatory}}</td>
+                                        <!-- <td><a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"><i
+                                                class="fas fa-trash-alt text-danger"></i> </a></td> -->
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 tile">
+                    <div class="card-headers text-center" style="border: none;">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5 class="card-title">Countries Registered
+
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group purple">
+                            {% for res in CountriesRegister %}
+                            <li class="list-group-item bg-primary">
+                                {{res.Country_Name}}
+                                <form method="POST" action="{% url 'CountryRegistered' res.No %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="myAction" value="delete">
+                                    <input type="hidden" name="lineNo" value="{{res.Country_Line_No_}}">
+                                    <input type="hidden" name="country" value="{{res.Country_Name}}">
+                                    <button type="submit" class="deleteBtn"><i
+                                            class="fas fa-trash-alt text-danger"></i></button>
+                                </form>
+                            </li>
+                            <hr style="color: white;">
+                            {% endfor %}
+                        </ul>
+                        <div class="d-grid gap-2 mt-3">
+                            <button class="btn btn-info" type="button" data-toggle="modal"
+                                data-target="#CountryRegistered"> <i class="fas fa-plus-circle"></i>
+                                Add New</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mt-3">
+                <div class="card h-100">
+                    <div class="card-body pt-3">
+                        <ul class="nav nav-tabs nav-tabs-bordered">
+
+                            <li class="nav-item">
+                                <button class="nav-link active" data-bs-toggle="tab"
+                                    data-bs-target="#profile-overview">Attachments</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content pt-2">
+
+                            <div class="tab-pane fade show active profile-overview" id="profile-overview">
+                                {% if res.Application_Stage == 'Not-Submitted' %}
+                                <form action="{% url 'Attachement' res.ProductNo %}" method="post"
+                                    enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label class="form-label">Document Name</label>
+                                        <select class="form-control select2" aria-label="Default select example"
+                                            name="name">
+                                            <option selected disabled value="">Choose...</option>
+                                            {% for attach in attach %}
+                                            {% if attach.Class == res.Veterinary_Classes %}
+                                            <option value="{{attach.code}}">{{attach.Description}}</option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Attachment</label>
+                                        <input type="file" class="form-control" accept=".doc,.docx,.pdf"
+                                            name="attachment">
+                                    </div>
+                                    <div class="mb-3">
+                                        <button type="submit" class="btn btn-primary w-100">Submit</button>
+                                    </div>
+                                </form>
+                                {% endif%}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-md-6">
+                <div class="card h-100 tile">
+                    <div class="card-headers text-center" style="border: none;">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5 class="card-title">Countries Registered
+
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <ul class="list-group purple">
+                            {% for res in CountriesRegister %}
+                            <li class="list-group-item bg-primary">
+                                {{res.Country_Name}}
+                                <form method="POST" action="{% url 'CountryRegistered' res.No %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="myAction" value="delete">
+                                    <input type="hidden" name="lineNo" value="{{res.Country_Line_No_}}">
+                                    <input type="hidden" name="country" value="{{res.Country_Name}}">
+                                    <button type="submit" class="deleteBtn"><i
+                                            class="fas fa-trash-alt text-danger"></i></button>
+                                </form>
+                            </li>
+                            <hr style="color: white;">
+                            {% endfor %}
+                        </ul>
+                        <div class="d-grid gap-2 mt-3">
+                            <button class="btn btn-info" type="button" data-toggle="modal"
+                                data-target="#CountryRegistered"> <i class="fas fa-plus-circle"></i>
+                                Add New </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body pt-3">
+                        <ul class="nav nav-tabs nav-tabs-bordered">
+
+                            <li class="nav-item">
+                                <button class="nav-link active" data-bs-toggle="tab"
+                                    data-bs-target="#profile-overview">Attachments</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content pt-2">
+
+                            <div class="tab-pane fade show active profile-overview" id="profile-overview">
+                                {% if res.Application_Stage == 'Not-Submitted' %}
+                                <form action="{% url 'Attachement' res.ProductNo %}" method="post"
+                                    enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label class="form-label">Document Name</label>
+                                        <select class="form-control select2" aria-label="Default select example"
+                                            name="name">
+                                            <option selected disabled value="">Choose...</option>
+                                            {% for attach in attach %}
+                                            {% if attach.Class == res.Veterinary_Classes %}
+                                            <option value="{{attach.Description}}">{{attach.Description}}</option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Attachment</label>
+                                        <input type="file" class="form-control" accept=".doc,.docx,.pdf"
+                                            name="attachment">
+                                    </div>
+                                    <div class="mb-3">
+                                        <button type="submit" class="btn btn-primary w-100">Submit</button>
+                                    </div>
+                                </form>
+                                {% endif%}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            {% endif %}
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card p-2">
+                    <h5 class="card-title text-dark">Attached Documents</h5>
+                    <div class="row">
+                        {% for data in files %}
+                        <div class="col-md-3">
+                            <div class="file-man-box" id="fileMan">
+                                <form action="{% url 'FnDeleteDocumentAttachment' res.ProductNo %}" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="docID" value="{{data.AuxiliaryIndex2}}">
+                                    <input type="hidden" name="tableID" value="{{data.Table_ID}}">
+                                    <button class="file-close" id="file-close"><i
+                                            class="fa fa-times-circle"></i></button>
+                                </form>
+                                <div class="file-img-box"><img
+                                        src="https://coderthemes.com/highdmin/layouts/assets/images/file_icons/pdf.svg"
+                                        alt="icon"></div>
+                                <div class="file-man-title">
+                                    <h5 class="mb-0 text-overflow">{{data.File_Name}}.{{data.File_Extension}}</h5>
+                                    <span class="document-description"> Date Attached:
+                                        {{data.Attached_Date}} </span>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-md-12">
+                            <span class="small text-danger">You have not attached any documents</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row my-3">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header" style="border: none;">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5 class="card-title" style="display:inline-block;float:right ;">Manufactures
+                                    Particulars</h5>
+                                {% if res.Application_Stage == 'Not-Submitted' %}
+                                <div class="inline mt-2" style="display:inline-block;">
+                                    <button type="button" class="btn btn-info" data-toggle="modal"
+                                        data-target="#createParticulars"><i class="fas fa-plus-circle"></i>
+                                        Add New </button>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+
+                        <div class="table-responsive">
+                            <table class="table table-striped data_table">
+                                <thead>
+                                    <tr>
+                                        <th>Manufacturer Type</th>
+                                        <th>Manufacturer Name</th>
+                                        <th>Address</th>
+                                        <th>Country</th>
+                                        <th>Telephone</th>
+                                        <th>Email</th>
+                                        <th>GMP NO</th>
+                                        <th>Activity</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for res in manufacturer %}
+                                    <tr>
+                                        <td>{{res.Type_of_Manufacture}}</td>
+                                        <td>{{res.Manufacture_Company_Name_}}</td>
+                                        <td>{{res.Manufacturing_plant_address}}</a></td>
+                                        <td>{{res.Country}}</a></td>
+                                        <td>{{res.Telephone}}</a></td>
+                                        <td>{{res.Email}}</a></td>
+                                        <td>{{res.GMP_No}}</a></td>
+                                        <td>{{res.Activity}}</td>
+                                        <td>
+                                            <form method="POST" action="{% url 'ManufacturesParticulars' res.No %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="myAction" value="delete">
+                                                <input type="hidden" name="TypeOfManufacturer" value="0">
+                                                <input type="hidden" name="manufacturerName" value="0">
+                                                <input type="hidden" name="plantAddress" value="0">
+                                                <input type="hidden" name="country" value="0">
+                                                <input type="hidden" name="ManufacturerTelephone" value="0">
+                                                <input type="hidden" name="ManufacturerEmail" value="0">
+                                                <input type="hidden" name="ManufacturerGMP" value="0">
+                                                <input type="hidden" name="activity" value="0">
+                                                <input type="hidden" name="lineNo" value="{{res.Line_No_}}">
+
+                                                <button type="submit" type="button"><i
+                                                        class="fas fa-trash-alt text-danger"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row my-3">
+            <div class="col-md-12">
+                <div class="card h-100">
+                    <div class="card-header" style="border: none;">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5 class="card-title" style="display:inline-block;float:right ;">Marketing
+                                    Authorisation in the country of origin and other countries
+                                </h5>
+                                {% if res.Application_Stage == 'Not-Submitted' %}
+                                <div class="inline mt-2" style="display:inline-block;">
+                                    <button type="button" class="btn btn-info" data-toggle="modal"
+                                        data-target="#MarketingAuthorization"><i class="fas fa-plus-circle"></i>
+                                        Add New </button>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped data_table">
+                                <thead>
+                                    <tr>
+                                        <th>Authorization Status</th>
+                                        <th>Country</th>
+                                        <th>Date</th>
+                                        <th>Proprietary Name</th>
+                                        <th>Reason</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for res in marketing %}
+                                    <tr>
+                                        <td>{{res.Marketing_Status}}</td>
+                                        <td>{{res.Country}}</td>
+                                        <td>{{res.Date}}</td>
+                                        <td>{{res.Proprietary_name}}</td>
+                                        <td>{{res.Reason}}</td>
+                                        <td>
+                                            <form method="POST"
+                                                action="{% url 'MarketingAuthorization' res.Country_No_ %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="myAction" value="delete">
+                                                <input type="hidden" name="AuthorisationStatus" value="0">
+                                                <input type="hidden" name="MarketingCountry" value="{{res.Country}}">
+                                                <input type="hidden" name="ProprietaryName" value="0">
+                                                <input type="hidden" name="DateAuthorisation" value="2000-1-1">
+                                                <input type="hidden" name="AuthorisationNumber" value="0">
+                                                <input type="hidden" name="AuthorisationReason" value="0">
+                                                <input type="hidden" name="lineNo" value="{{res.Market_Line_No_}}">
+                                                <button type="submit" type="button"><i
+                                                        class="fas fa-trash-alt text-danger"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% if class == 'FEED ADDITIVES'  %}
+        <div class="row my-3">
+            <div class="col-md-12">
+                <div class="card h-100">
+                    <div class="card-header" style="border: none;">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5 class="card-title" style="display:inline-block;float:right ;">Additives/Impurities
+                                </h5>
+                                {% if res.Application_Stage == 'Not-Submitted' %}
+                                <div class="inline mt-2" style="display:inline-block;">
+                                    <button type="button" class="btn btn-info" data-toggle="modal"
+                                        data-target="#Additives"><i class="fas fa-plus-circle"></i>
+                                        Add New</button>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped data_table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Proportion</th>
+                                        <th>Specification</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for res in additive %}
+                                    <tr>
+                                        <td>{{res.Ingredient_Name_Addictives_}}</td>
+                                        <td>{{res.Proportion_e_g_____ppm_units__Addictives_}}</td>
+                                        <td>{{res.Purpose_of_use__Addictives_}}</td>
+                                        <td>
+                                            <form method="POST" action="{% url 'Additive' res.No %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="myAction" value="delete">
+                                                <input type="hidden" name="AdditiveName" value="0">
+                                                <input type="hidden" name="Proportion" value="0">
+                                                <input type="hidden" name="specification" value="0">
+                                                <input type="hidden" name="lineNo" value="{{res.Ad_No}}">
+                                                <button type="submit" type="button"><i
+                                                        class="fas fa-trash-alt text-danger"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+<!-- Modals -->
+{% include 'data.html' %}
+<!-- Create Manufacturer particulars -->
+<div class="modal fade" id="createParticulars" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Add Particulars of the Manufacturer and Activity</h5>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'ManufacturesParticulars' res.ProductNo %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="myAction" value="insert">
+                    <input type="hidden" name="lineNo" value="">
+                    <div class="row my-2">
+                        <div class="col-md-12">
+                            <label class="form-label">Type of Manufacturer <span class="text-danger">*</span></label>
+                            <select class="form-control select2" name="TypeOfManufacturer" id="TypeOfManufacturer"
+                                aria-label="Default select example" required>
+                                <option selected>Choose .. </option>
+                                <option value="1">Manufacturer of finished product</option>
+                                <option value="2">Company releasing product </option>
+                                <option value="3">Manufacturer of active ingredient</option>
+                                <option value="4">Manufacturer of inactive ingredient</option>
+                                <option value="5">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row my-2" id="manufacturerOtherRow" style="display: none;">
+                        <div class="col-md-12">
+                            <label class="form-label">Other Type of Manufacturer</label>
+                            <input type="text" class="form-control" name="manufacturerOther" id="manufacturerOther"
+                                disabled>
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Manufacturer Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="manufacturerName" id="manufacturerName"
+                                required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Plant Address<span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="plantAddress" required>
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Manufacturer Country <span class="text-danger">*</span></label>
+                            <select class="form-control select2" aria-label="Default select example" name="country">
+                                <option selected value="" disabled>Select Country</option>
+                                {% for res in country %}
+                                <option value="{{res.Name}}">{{res.Name}}</option>
+
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Manufacturer Telephone<span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="ManufacturerTelephone" required>
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Manufacturer Email <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="ManufacturerEmail" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Manufacturer GMP</label>
+                            <input type="text" class="form-control" name="ManufacturerGMP">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Activity</label>
+                        <select class="form-control select2" name="activity">
+                            <option selected>Choose...</option>
+                            <option value="1">Formulation (dispensing, mixing, blending) </option>
+                            <option value="2">Processing(compression, emulsification etc)</option>
+                            <option value="3">Packaging</option>
+                            <option value="4">Quality Control</option>
+                            <option value="5">Warehousing (raw material, finished products)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-info my-2">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Create Ingredients -->
+<div class="modal fade" id="activeIngredients" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Add Ingredients</h5>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'Ingredients' res.ProductNo %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="myAction" value="insert">
+                    <input type="hidden" name="lineNo" value="">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-2">
+                                <label class="form-label">Ingredient Type <span class="text-danger">*</span></label>
+                                <select class="form-control select2" name="ingredientType" id="ingredientType"
+                                    aria-label="Default select example" required>
+                                    <option selected>Choose .. </option>
+                                    <option value="1">Active</option>
+                                    <option value="2">Inactive</option>
+                                    <option value="3">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-2">
+                                <label class="form-label">Ingredient Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="ingredientName" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-2">
+                                <label class="form-label">Quantity Per Dose<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="quantityPerDose" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-2">
+                                <label class="form-label">Strength Of Ingredient<span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="strengthOfIngredient" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-2">
+                                <label class="form-label">Proportion(e.g. %, ppm, units)<span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="Proportion" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="ReasonForInclusionRow" style="display: none;">
+                        <div class="col-md-12">
+                            <div class="mb-2">
+                                <label class="form-label">Reason For Inclusion <span
+                                        class="text-danger">*</span></label>
+                                <textarea class="form-control longText" name="ReasonForInclusion"
+                                    id="ReasonForInclusion" disabled></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-2">
+                                <label class="form-label">Specification <span class="text-danger">*</span></label>
+                                <textarea class="form-control longText" name="specification"></textarea>
+                                <div class="form-text">
+                                    Specification of purity of the active substance as manufactured in g/kg, g/l or %w/w
+                                    (v/v) as appropriate, providing inclusively the upper and lower limit
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-info w-100 my-2">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Country Registered -->
+<div class="modal fade" id="CountryRegistered" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Country Registered</h5>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'CountryRegistered' res.ProductNo %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="myAction" value="insert">
+                    <input type="hidden" name="lineNo" value="">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-2">
+                                <label class="form-label">Country <span class="text-danger">*</span></label>
+                                <select class="form-control select2" aria-label="Default select example" name="country">
+                                    <option selected value="" disabled>Select Country</option>
+                                    {% for res in country %}
+                                    <option value="{{res.Name}}">{{res.Name}}</option>
+
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-info my-2">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- MarketingAuthorization -->
+<div class="modal fade" id="MarketingAuthorization" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Marketing Authorization</h5>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'MarketingAuthorization' res.ProductNo %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="myAction" value="insert">
+                    <input type="hidden" name="lineNo" value="">
+                    <div class="row my-2">
+                        <h5>Marketing Authorisation in the country of origin and other countries</h5>
+                        <div class="col-md-12">
+                            <label class="form-label">Authorisation Status</label>
+                            <select class="form-control select2" name="AuthorisationStatus" id="AuthorisationStatus">
+                                <option selected>Choose...</option>
+                                <option value="1">Authorised</option>
+                                <option value="2">Refused</option>
+                                <option value="3">Withdrawn (by applicant after authorisation)</option>
+                                <option value="4">Suspended/revoked (by competent authority)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row my-2" style="display: none;" id="MarketingCountryRow">
+                        <div class="col-md-12">
+                            <label class="form-label">Country</label>
+                            <select class="form-control select2" name="MarketingCountry" id="MarketingCountry" disabled>
+                                <option selected disabled value="">Choose...</option>
+                                {% for res in country %}
+                                <option value="{{res.Name}}">{{res.Name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row my-2" style="display: none;" id="DateAuthorisationRow">
+                        <div class="col-md-12">
+                            <label class="form-label">Date of authorisation/Refusal/Withdrawal/Suspension</label>
+                            <input type="date" id="DateAuthorisation" class="form-control" name="DateAuthorisation"
+                                disabled>
+                        </div>
+                    </div>
+                    <div class="row my-2" style="display:none ;" id="ProprietaryNameRow">
+                        <div class="col-md-12">
+                            <label class="form-label">Proprietary Name</label>
+                            <input type="text" class="form-control" name="ProprietaryName" id="ProprietaryName"
+                                disabled>
+                        </div>
+                    </div>
+                    <div class="row my-2" style="display: none;" id="AuthorisationNumberRow">
+                        <div class="col-md-12">
+                            <label class="form-label">Authorisation number</label>
+                            <input type="text" class="form-control" name="AuthorisationNumber" id="AuthorisationNumber"
+                                disabled>
+                        </div>
+                    </div>
+                    <div class="row my-2" style="display: none;" id="AuthorisationReasonRow">
+                        <div class="col-md-12">
+                            <label class="form-label">Reason</label>
+                            <textarea class="form-control longText" name="AuthorisationReason" id="AuthorisationReason"
+                                disabled></textarea>
+
+                            <div class="form-text">State reasons for not being authorized</div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-info my-2">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Additives -->
+<div class="modal fade" id="Additives" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Additives/Impurities</h5>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'Additive' res.ProductNo %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="myAction" value="insert">
+                    <input type="hidden" name="lineNo" value="">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-2">
+                                <label class="form-label">Additive Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="AdditiveName" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-2">
+                                <label class="form-label">Proportion(e.g. %, ppm, units)<span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="Proportion" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-2">
+                                <label class="form-label">Specification <span class="text-danger">*</span></label>
+                                <textarea class="form-control longText" name="specification"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-info my-2">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End -->
+
+<!-- principles -->
+<div class="modal fade" id="principles" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p>The manufacturer of the device will determine which principles are appropriate for a particular
+                    device while taking into account the intended purpose of the device.</p>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'essentialPrinciples' res.ProductNo %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="myAction" value="insert">
+                    <input type="hidden" name="lineNo" value="">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-2">
+                                <label class="form-label">Essential Principle<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="essentialPrinciple" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-2">
+                                <label class="form-label">Method<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="generalMethod" required>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-info my-2">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End -->
+
+<!-- principles -->
+<div class="modal fade" id="regulatory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Regulatory Approvals</h5>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'FnRegulatory' res.ProductNo %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="myAction" value="insert">
+                    <input type="hidden" name="lineNo" value="">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-2">
+                                <label class="form-label">Regulatory Number<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="regulatoryNo" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-2">
+                                <label class="form-label">Regulatory<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="regulatory" required>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-info my-2">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End -->
+<script>
+    $(document).ready(function () {
+        $('#AuthorisationStatus').on('change', function () {
+            if (this.value == "1") {
+                $('#MarketingCountryRow').show(1000)
+                $('#DateAuthorisationRow').show(1500)
+                $('#ProprietaryNameRow').show(1800)
+                $('#AuthorisationNumberRow').show(2000)
+                $('#AuthorisationReasonRow').hide()
+                $('#MarketingCountry').prop('disabled', false);
+                $('#DateAuthorisation').prop('disabled', false);
+                $('#ProprietaryName').prop('disabled', false);
+                $('#AuthorisationNumber').prop('disabled', false);
+                $('#CertificateVeterinary').prop('disabled', false);
+                $('#AuthorisationReason').prop('disabled', true);
+            } else if (this.value == "2") {
+                $('#MarketingCountryRow').show(1000)
+                $('#DateAuthorisationRow').show(1800)
+                $('#ProprietaryNameRow').hide()
+                $('#AuthorisationNumberRow').hide()
+                $('#AuthorisationReasonRow').show(2500)
+                $('#MarketingCountry').prop('disabled', false);
+                $('#DateAuthorisation').prop('disabled', false);
+                $('#AuthorisationReason').prop('disabled', false);
+                $('#CertificateVeterinary').prop('disabled', false);
+                $('#ProprietaryName').prop('disabled', true);
+                $('#AuthorisationNumber').prop('disabled', true);
+            } else if (this.value == "3") {
+                $('#MarketingCountryRow').show(1000)
+                $('#DateAuthorisationRow').show(1500)
+                $('#ProprietaryNameRow').show(1800)
+                $('#AuthorisationNumberRow').hide()
+                $('#AuthorisationReasonRow').show(2500)
+                $('#MarketingCountry').prop('disabled', false);
+                $('#DateAuthorisation').prop('disabled', false);
+                $('#AuthorisationReason').prop('disabled', false);
+                $('#CertificateVeterinary').prop('disabled', false);
+                $('#ProprietaryName').prop('disabled', false);
+                $('#AuthorisationNumber').prop('disabled', true);
+            } else if (this.value == "4") {
+                $('#MarketingCountryRow').show(1000)
+                $('#DateAuthorisationRow').show(1500)
+                $('#ProprietaryNameRow').show(1800)
+                $('#AuthorisationNumberRow').hide()
+                $('#AuthorisationReasonRow').show(2500)
+                $('#MarketingCountry').prop('disabled', false);
+                $('#DateAuthorisation').prop('disabled', false);
+                $('#AuthorisationReason').prop('disabled', false);
+                $('#CertificateVeterinary').prop('disabled', false);
+                $('#ProprietaryName').prop('disabled', false);
+                $('#AuthorisationNumber').prop('disabled', true);
+            }
+
+        });
+        $('#ingredientType').on('change', function () {
+            if (this.value == "1") {
+                $('#ReasonForInclusionRow').hide()
+                $('#ReasonForInclusion').prop('disabled', true);
+            } else {
+                $('#ReasonForInclusionRow').show(1000)
+                $('#ReasonForInclusion').prop('disabled', false);
+            }
+        });
+
+        $('#TypeOfManufacturer').on('change', function () {
+            if (this.value == "5") {
+                $('#manufacturerOtherRow').show(1000)
+                $('#manufacturerOther').prop('disabled', false);
+            } else {
+                $('#manufacturerOtherRow').hide(1000)
+                $('#manufacturerOther').prop('disabled', true);
+            }
+        });
+
+    })
+</script>
+{% endblock %}

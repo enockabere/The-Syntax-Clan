@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="{% static 'plugins/Moment/moment.js' %}"></script>
+
+<section class="section">
+    <div class="section-header">
+        <h1>Product Retention</h1>
+        <div class="section-header-breadcrumb">
+            <div class="breadcrumb-item active"><a href="{% url 'dashboard' %}">Dashboard</a></div>
+            <div class="breadcrumb-item">My Retention</div>
+        </div>
+    </div>
+
+    <div class="section-body">
+        <h2 class="section-title">My Applications</h2>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <ul class="nav nav-tabs" id="myTab2" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="home-tab2" data-toggle="tab" href="#home2" role="tab"
+                                    aria-controls="home" aria-selected="true">New
+                                    ({{new|length}})</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="profile-tab2" data-toggle="tab" href="#profile2" role="tab"
+                                    aria-controls="profile" aria-selected="false">Submitted
+                                    ({{submitted|length}})</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content tab-bordered" id="myTab3Content">
+                            <div class="tab-pane fade show active" id="home2" role="tabpanel"
+                                aria-labelledby="home-tab2">
+                                <div class="table-responsive">
+                                    <table class="table table-striped data_table">
+                                        <thead>
+                                            <tr>
+                                                <th>Retention No</th>
+                                                <th>Product Name</th>
+                                                <th>Amount Payable</th>
+                                                <th>Status</th>
+                                                <th>Fee Penalty</th>
+                                                <th>Bulk Process</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for retention in new %}
+                                            <tr>
+                                                <td>{{retention.Retension_No_}}</td>
+                                                <td>{{retention.Product_name}}</td>
+                                                <td>{{retention.Currency_Code}} {{retention.Amount_Payable}}</td>
+                                                <td>
+                                                    <span class="badge bg-info text-white">{{retention.Status}}</span>
+                                                </td>
+                                                <td>
+                                                    {% if retention.Penalty_Amount == 0 %}
+                                                    None
+                                                    {% else %}
+                                                    {{retention.Currency_Code}}
+                                                    {{retention.Penalty_Amount}}
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if retention.Bulk_Invoice == True %}
+                                                    <span class="badge bg-secondary text-white">Yes</span>
+                                                    {% else %}
+                                                    <span class="badge bg-secondary text-white">No</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if retention.Bulk_Invoice == True %}
+                                                    <a href="{% url 'BulkDetails' retention.Retension_No_ %}"
+                                                        type="button" class="btn btn-primary"> View <i
+                                                            class="bi bi-eye"></i></a>
+                                                    {% else %}
+                                                    <a href="{% url 'retentionDetails' retention.Retension_No_ %}"
+                                                        type="button" class="btn btn-primary"> View <i
+                                                            class="bi bi-eye"></i></a>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="profile2" role="tabpanel" aria-labelledby="profile-tab2">
+                                <div class="table-responsive">
+                                    <table class="table table-striped data_table">
+                                        <thead>
+                                            <tr>
+                                                <th>Retention No</th>
+                                                <th>Product Name</th>
+                                                <th>Amount Payable</th>
+                                                <th>Status</th>
+                                                <th>Paid</th>
+                                                <th>Fee Penalty</th>
+                                                <th>Bulk Process</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for retention in submitted %}
+                                            <tr>
+                                                <td>{{retention.Retension_No_}}</td>
+                                                <td>{{retention.Product_name}}</td>
+                                                <td>{{retention.Currency_Code}} {{retention.Amount_Payable}}</td>
+                                                <td>
+                                                    <span class="badge bg-info text-white">{{retention.Status}}</span>
+                                                </td>
+                                                <td>
+                                                    {% if retention.Paid == True %}
+                                                    Yes
+                                                    {% else %}
+                                                    No
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if retention.Penalty_Amount == 0 %}
+                                                    None
+                                                    {% else %}
+                                                    {{retention.Currency_Code}}
+                                                    {{retention.Penalty_Amount}}
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if retention.Bulk_Invoice == True %}
+                                                    <span class="badge bg-secondary text-white">Yes</span>
+                                                    {% else %}
+                                                    <span class="badge bg-secondary text-white">No</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if retention.Bulk_Invoice == True %}
+                                                    <a href="{% url 'BulkDetails' retention.Retension_No_ %}"
+                                                        type="button" class="btn btn-primary"> View <i
+                                                            class="bi bi-eye"></i></a>
+                                                    {% else %}
+                                                    <a href="{% url 'retentionDetails' retention.Retension_No_ %}"
+                                                        type="button" class="btn btn-primary"> View <i
+                                                            class="bi bi-eye"></i></a>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+
+<section class="section">
+    <div class="section-header">
+        <h1>Product Registration</h1>
+        <div class="section-header-breadcrumb">
+            <div class="breadcrumb-item active"><a href="{% url 'dashboard' %}">Dashboard</a></div>
+            <div class="breadcrumb-item">Registration</div>
+        </div>
+    </div>
+    <div class="section-body" id="main">
+        <div class="row">
+            <div class="col-md-12">
+                <button class="btn btn-info my-3" data-toggle="modal" data-target="#new_floor" style="float: right;">
+                    <i class="fas fa-plus"></i> New Product</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                {% include 'alert.html' %}
+                <div class="card">
+                    <div class="card-body">
+                        <ul class="nav nav-tabs" id="myTab2" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="home-tab2" data-toggle="tab" href="#home2" role="tab"
+                                    aria-controls="home" aria-selected="true">New Application
+                                    ({{openCount}})</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content tab-bordered" id="myTab3Content">
+                            <div class="tab-pane fade show active" id="home2" role="tabpanel"
+                                aria-labelledby="home-tab2">
+                                <div class="table-responsive">
+                                    <table class="table table-striped data_table">
+                                        <thead>
+                                            <tr>
+                                                <th>Product Class</th>
+                                                <th>Document Date</th>
+                                                <th>Types Of Manufacturer</th>
+                                                <th>Amount Payable</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for res in open %}
+                                            <tr>
+                                                <td>{{res.Veterinary_Classes}}</td>
+                                                <td>{{res.Document_Date}}</td>
+                                                <td>{{res.Types_Of_Manufacturers}}</td>
+                                                <td><span class="text-primary"
+                                                        style="margin-right: 2px;">{{res.Currency_Code}}</span>{{res.Amount_Payable}}
+                                                </td>
+                                                <td>
+                                                    <a class="btn btn-info btn-action mr-1" data-toggle="modal"
+                                                        data-target="#static{{res.ProductNo}}"><i
+                                                            class="fas fa-pencil-alt"></i> Edit</a>
+
+                                                    <!--Edit Modal -->
+                                                    <div class="modal fade" tabindex="-1" role="dialog"
+                                                        id="static{{res.ProductNo}}">
+                                                        <div class="modal-dialog" role="document">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="staticBackdropLabel">
+                                                                        Edit
+                                                                        Product {{res.ProductNo}}</h5>
+
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <form action="{% url 'productClass' %}"
+                                                                        method="post">
+                                                                        {% csrf_token %}
+                                                                        <input type="hidden" name="prodNo"
+                                                                            value="{{res.ProductNo}}">
+                                                                        <input type="hidden" name="myAction"
+                                                                            value="modify">
+                                                                        <div class="row mb-2">
+                                                                            <div class="col-md-12">
+                                                                                <label class="form-label">Product
+                                                                                    Type</label>
+                                                                                <select class="form-control select2"
+                                                                                    name="vetClass">
+                                                                                    <option selected disabled value="">
+                                                                                        Select Product</option>
+                                                                                    {% for res in product %}
+                                                                                    <option value="{{res.Class}}">
+                                                                                        {{res.Class}}</option>
+                                                                                    {% empty %}
+                                                                                    <option selected disabled value="">
+                                                                                        Null
+                                                                                    </option>
+                                                                                    {% endfor %}
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <label class="form-label">Manufacturer
+                                                                                    Type</label>
+                                                                                <select class="form-control select2"
+                                                                                    name="typeofManufacture">
+                                                                                    <option value="1">Local</option>
+                                                                                    <option value="2">Foregn</option>
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="footer my-3">
+
+                                                                            <button type="submit"
+                                                                                class="btn btn-primary">Submit</button>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <a href="{% url 'applications' res.ProductNo %}" type="button"
+                                                        class="btn btn-success"> Start <i
+                                                            class="bi bi-arrow-right"></i></a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" tabindex="-1" role="dialog" id="new_floor">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Register Product</h5>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="{% url 'productClass' %}" novalidate>
+                        {% csrf_token %}
+                        <input type="hidden" name="prodNo" value="">
+                        <input type="hidden" name="myAction" value="insert">
+                        <div class="row mb-2">
+                            <div class="col-md-12">
+                                <label class="form-label">Product Type</label>
+                                <select class="form-control select2" name="vetClass">
+                                    <option selected disabled value="">Select Product</option>
+                                    {% for res in product %}
+                                    <option value="{{res.Class}}">{{res.Class}}</option>
+                                    {% empty %}
+                                    <option selected disabled value="">Null</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label class="form-label">Manufacturer Type</label>
+                                <select class="form-control select2" name="typeofManufacture">
+                                    <option value="1">Local</option>
+                                    <option value="2">Foregn</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group my-2">
+                            <button type="submit" class="btn btn-primary btn-lg btn-block">
+                                Save
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

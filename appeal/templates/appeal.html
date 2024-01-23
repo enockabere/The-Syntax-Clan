@@ -1,0 +1,296 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+
+<!--Header-->
+{% include 'navbar.html' %}
+<!-- End Header -->
+
+<!-- Sidebar-->
+{% include 'sidebar.html' %}
+<!-- End Sidebar -->
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Appeal</h1>
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Appeal</a></li>
+                        <li class="breadcrumb-item active">Registration</li>
+                        <li class="breadcrumb-item active">Appeal</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticAppeal"
+                            style="float: right;">
+                            <i class="bi bi-plus"></i> Raise Appeal</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="section contact">
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Bordered Tabs Justified -->
+                        <ul class="nav nav-tabs nav-tabs-bordered d-flex mt-3" id="borderedTabJustified" role="tablist">
+                            <li class="nav-item flex-fill" role="presentation">
+                                <button class="nav-link w-100 active" id="home-tab" data-bs-toggle="tab"
+                                    data-bs-target="#bordered-justified-home" type="button" role="tab"
+                                    aria-controls="home" aria-selected="true">Open
+                                    ({{openCount}})</button>
+                            </li>
+                            <li class="nav-item flex-fill" role="presentation">
+                                <button class="nav-link w-100" id="pending-tab" data-bs-toggle="tab"
+                                    data-bs-target="#bordered-justified-pending" type="button" role="tab"
+                                    aria-controls="contact" aria-selected="false"> Pending Approval
+                                    ({{pendCount}})</button>
+                            </li>
+                            <li class="nav-item flex-fill" role="presentation">
+                                <button class="nav-link w-100" id="profile-tab" data-bs-toggle="tab"
+                                    data-bs-target="#bordered-justified-approve" type="button" role="tab"
+                                    aria-controls="profile" aria-selected="false">Approved
+                                    ({{appCount}})</button>
+                            </li>
+                            <li class="nav-item flex-fill" role="presentation">
+                                <button class="nav-link w-100" id="contact-tab" data-bs-toggle="tab"
+                                    data-bs-target="#bordered-justified-reject" type="button" role="tab"
+                                    aria-controls="contact" aria-selected="false">Rejected
+                                    ({{rejectedCount}})</button>
+                            </li>
+
+                        </ul>
+                        <div class="tab-content pt-2" id="borderedTabJustifiedContent">
+                            <div class="tab-pane fade show active my-4" id="bordered-justified-home" role="tabpanel"
+                                aria-labelledby="home-tab">
+                                <table
+                                    class="display table  table-striped dt-responsive table-responsive-lg table-bordered datatable">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Appeal No</th>
+                                            <th scope="col">Product No</th>
+                                            <th scope="col">Appeal Stage</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col">Amount Payable</th>
+                                            <th scope="col">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for res in open %}
+                                        <tr>
+                                            <td>{{res.Appeal_No_}}</td>
+                                            <td>{{res.ProductNo}}</td>
+                                            <td>{{res.Appeal_Stage}}</td>
+                                            <td><span class="badge bg-success">{{res.Status}}</span></td>
+                                            <td>
+                                                <span class="text-primary"
+                                                    style="margin-right: 2px;">{{res.Currency_Code}}</span>{{res.Amount_Payable}}
+                                            </td>
+                                            <td>
+                                                <div class="d-grid gap-1 d-md-flex justify-content">
+                                                    <button class="btn btn-secondary me-sm-2" type="button"
+                                                        data-toggle="tooltip" data-placement="top" title="edit"
+                                                        data-bs-toggle="modal" data-bs-target="#editAppeal">Edit <i
+                                                            class="bi bi-pencil-square"></i></button>
+                                                    <a href="{% url 'appealDetails' res.Appeal_No_ %}" type="button"
+                                                        class="btn btn-success">Next <i class="bi bi-eye-fill"></i>
+                                                    </a>
+                                                </div>
+                                                <div class="modal fade" id="editAppeal" data-bs-backdrop="static"
+                                                    data-bs-keyboard="false" tabindex="-1"
+                                                    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                    <div
+                                                        class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title text-white"
+                                                                    id="exampleModalLabel">
+                                                                    Edit Appeal No. {{res.Appeal_No_}} </h5>
+                                                                <button type="button" class="btn-close btn-close-white"
+                                                                    data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <form action="{% url 'appeal' %}" method="post">
+                                                                    {% csrf_token %}
+                                                                    <input type="hidden" name="appNo"
+                                                                        value="{{res.Appeal_No_}}">
+                                                                    <input type="hidden" name="myAction" value="modify">
+                                                                    <div class="row my-2">
+                                                                        <div class="col-md-12">
+                                                                            <label for=""
+                                                                                class="form-label">Product</label>
+                                                                            <select class="form-select" name="prodNo"
+                                                                                required>
+                                                                                <option value="0" disabled selected>
+                                                                                    --Select Product--</option>
+                                                                                {% for res in product %}
+                                                                                <option value="{{res.ProductNo}}">
+                                                                                    {{res.Productname}}
+                                                                                </option>
+                                                                                {% endfor %}
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+                                                                    <button type="button" class="btn btn-danger"
+                                                                        data-bs-dismiss="modal">Close</button>
+                                                                    <button type="submit" class="btn btn-success my-2"
+                                                                        id="retentionSubmit">Submit</button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tab-pane fade my-4" id="bordered-justified-pending" role="tabpanel"
+                                aria-labelledby="contact-tab">
+                                <table
+                                    class="display table w-100  table-striped dt-responsive table-responsive-lg table-bordered datatable">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Appeal No</th>
+                                            <th scope="col">Product No</th>
+                                            <th scope="col">Appeal Stage</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for res in pending %}
+                                        <tr>
+                                            <td>{{res.Appeal_No_}}</td>
+                                            <td>{{res.ProductNo}}</td>
+                                            <td>{{res.Appeal_Stage}}</td>
+                                            <td><span class="badge bg-success">{{res.Status}}</span></td>
+
+                                            <td>
+                                                <a ref="{% url 'appealDetails' res.Appeal_No_ %}" type="button"
+                                                    class="btn btn-primary"><i class="bi bi-eye-fill"></i>
+                                                    View</a>
+                                            </td>
+
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tab-pane fade my-4" id="bordered-justified-approve" role="tabpanel"
+                                aria-labelledby="profile-tab">
+                                <table
+                                    class="display table w-100  table-striped dt-responsive table-responsive-lg table-bordered datatable">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Appeal No</th>
+                                            <th scope="col">Product No</th>
+                                            <th scope="col">Appeal Stage</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for res in approved %}
+                                        <tr>
+                                            <td>{{res.Appeal_No_}}</td>
+                                            <td>{{res.ProductNo}}</td>
+                                            <td>{{res.Appeal_Stage}}</td>
+                                            <td><span class="badge bg-success">{{res.Status}}</span></td>
+                                            <td>
+                                                <a ref="{% url 'appealDetails' res.Appeal_No_ %}" type="button"
+                                                    class="btn btn-primary"><i class="bi bi-eye-fill"></i>
+                                                    View</a>
+                                            </td>
+
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tab-pane fade my-4" id="bordered-justified-reject" role="tabpanel"
+                                aria-labelledby="contact-tab">
+                                <table
+                                    class="display table w-100  table-striped dt-responsive table-responsive-lg table-bordered datatable">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Appeal No</th>
+                                            <th scope="col">Product No</th>
+                                            <th scope="col">Appeal Stage</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for res in rejected %}
+                                        <tr>
+                                            <td>{{res.Appeal_No_}}</td>
+                                            <td>{{res.ProductNo}}</td>
+                                            <td>{{res.Appeal_Stage}}</td>
+                                            <td><span class="badge bg-success">{{res.Status}}</span></td>
+                                            <td>
+                                                <a ref="{% url 'appealDetails' res.Appeal_No_ %}" type="button"
+                                                    class="btn btn-primary"><i class="bi bi-eye-fill"></i>
+                                                    View</a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="modal fade" id="staticAppeal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-white" id="exampleModalLabel">
+                        Raise Appeal</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'appeal' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="appNo" value="">
+                        <input type="hidden" name="myAction" value="insert">
+                        <div class="row my-2">
+                            <div class="col-md-12">
+                                <label for="" class="form-label">Product</label>
+                                <select class="form-select" name="prodNo" required>
+                                    <option value="0" disabled selected>--Select Product--</option>
+                                    {% for res in product %}
+                                    <option value="{{res.ProductNo}}">{{res.Productname}}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success my-2" id="retentionSubmit">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% include 'footer.html' %}
+
+{% endblock %}

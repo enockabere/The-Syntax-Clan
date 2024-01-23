@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
+    <title>{% block title %}{% endblock %} &mdash; Syntax Clan</title>
+
+    <!-- General CSS Files -->
+    <link rel="stylesheet" href="{% static 'assets/modules/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/modules/fontawesome/css/all.min.css' %}">
+
+    <!-- CSS Libraries -->
+
+    <!-- Template CSS -->
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/components.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/iziToast-master/dist/css/iziToast.min.css' %}">
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="{% static 'img/logo/lighting.png' %}" />
+</head>
+
+<body class="layout-3">
+    <div id="app">
+        <div class="main-wrapper container">
+            <!-- Main Content -->
+            <div class="main-content">
+                {% block base %}
+                {% endblock %}
+            </div>
+        </div>
+
+    </div>
+    {% include 'footer.html' %}
+    <script src="{% static 'assets/modules/jquery.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'assets/modules/popper.js' %}" type="text/javascript"></script>
+    <script src="{% static 'assets/modules/tooltip.js' %}" type="text/javascript"></script>
+    <script src="{% static 'assets/modules/bootstrap/js/bootstrap.min.js' %}" type="text/javascript"></script>
+
+    <!-- Data Tables -->
+    <script src="{% static 'plugins/iziToast-master/dist/js/iziToast.min.js' %}" type="text/javascript"></script>
+
+    <script>
+        $(document).ready(function () {
+            const currentYear = new Date().getFullYear();
+            $('#currentYear').empty().append(currentYear)
+        })
+    </script>
+</body>
+
+</html>
