@@ -14,17 +14,6 @@ from django.http import HttpResponse, JsonResponse
 from myRequest.views import UserObjectMixins
 
 
-# Create your views here.
-class UserObjectMixin(object):
-    model = None
-    session = requests.Session()
-    session.auth = config.AUTHS
-
-    def get_object(self, endpoint):
-        response = self.session.get(endpoint, timeout=10).json()
-        return response
-
-
 class registrationRetention(UserObjectMixins, View):
     async def get(self, request):
         try:
@@ -135,7 +124,7 @@ class registrationRetention(UserObjectMixins, View):
                 return redirect("retention")
 
 
-class RetentionDetails(UserObjectMixin, View):
+class RetentionDetails(UserObjectMixins, View):
     def get(self, request, pk):
         try:
             logger = logging.getLogger("selfservice")
@@ -203,7 +192,7 @@ class RetentionDetails(UserObjectMixin, View):
         return render(request, "single-retention-detail.html", ctx)
 
 
-class retentionGateway(UserObjectMixin, View):
+class retentionGateway(UserObjectMixins, View):
     def get(self, request, pk):
         try:
             userID = request.session["UserID"]

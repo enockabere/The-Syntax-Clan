@@ -1,5 +1,6 @@
 from django.contrib.gis.db import models
-from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth.models import AbstractUser, BaseUserManager, Group
+
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -32,10 +33,12 @@ class CustomUser(AbstractUser):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+    verification_link = models.CharField(max_length=255, blank=True)
+    verification_link_created_at = models.DateTimeField(null=True, blank=True)
     is_email_verified = models.BooleanField(default=False)
         
     groups = models.ManyToManyField(
-        'auth.Group',
+        Group,
         related_name='custom_user_groups',
         blank=True,
         verbose_name='groups',

@@ -2,6 +2,7 @@
 <html>
 
 <head>
+    <title>Verify Your Account</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -21,6 +22,17 @@
             border-radius: 10px;
         }
 
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            text-align: center;
+            text-decoration: none;
+            background-color: #ff6022;
+            color: #ffffff;
+            border-radius: 5px;
+        }
+
         .signature {
             margin-top: 20px;
             font-weight: bold;
@@ -36,10 +48,8 @@
     <div class="container">
         <p>Hi {{user}},</p>
         <div class="message">
-            <p>Thanks for creating an account with us! Please use the Verification Code below to verify your account.
-            </p>
-
-            <p>Verification Code: {{Secret}}</p>
+            <p>Thanks for creating an account with us! Please use the link below to verify your account.</p>
+            <a class="button" href="{{verification_link}}" alt="Verify your account now">Verify your account now</a>
         </div>
         <p class="signature">Best regards,<br>The Syntax Clan</p>
     </div>

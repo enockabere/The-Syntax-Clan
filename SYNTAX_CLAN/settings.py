@@ -61,26 +61,19 @@ INSTALLED_APPS = [
     "authentication",
     "base",
     "dashboard",
-    "registration",
     "pharmaceutical",
     "vaccine",
     "pesticide",
     "feed",
     "biocidal",
     "devices",
-    "variation",
-    "appeal",
-    "payment",
     "retention",
-    "renewal",
-    "gmp",
     "myRequest",
     "permit",
     "retailers",
     "advertisement",
     "disposal",
     "manufacturing",
-    'django.contrib.gis',
 ]
 
 MIDDLEWARE = [
@@ -181,28 +174,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "images")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-PESAFLOW_CLIENT_ID = config("PESAFLOW_CLIENT_ID")
-PESAFLOW_CLIENT_SECRET = config("PESAFLOW_CLIENT_SECRET")
-SSO_CLIENT_ID = config("SSO_CLIENT_ID")
-SSO_CLIENT_SECRET = config("SSO_CLIENT_SECRET")
-REDIRECT_URI = config("REDIRECT_URI")
-AUTH_URL = config("AUTH_URL")
-TOKEN_URL = config("TOKEN_URL")
-USER_INFO_URL = config("USER_INFO_URL")
-SERVICE_ID = config("SERVICE_ID")
-NOTIFICATION_URL = config("NOTIFICATION_URL")
-KEY = config("KEY")
-API_URL = config("API_URL")
-
-
-AUTHS = Session()
-
-WEB_SERVICE_PWD = "Password@312"
-WEB_SERVICE_UID = "KTL-ADMIN"
-
-BASE_URL = "http://20.120.96.92:2047/BC200/WS/VMD%20TEST%20LIVE/Codeunit/WebPortal"
-O_DATA = "http://20.120.96.92:2048/BC200/ODataV4/Company(%27VMD%20TEST%20LIVE%27){}"
-AUTHS.auth = HTTPBasicAuth("KTL-ADMIN", WEB_SERVICE_PWD)
-
-CLIENT = Client(BASE_URL, transport=Transport(session=AUTHS))
-AUTHS = HTTPBasicAuth("KTL-ADMIN", WEB_SERVICE_PWD)
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
+EMAIL_BACKEND = config('EMAIL_BACKEND')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS')
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_PORT = config('EMAIL_PORT')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')

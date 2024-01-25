@@ -23,10 +23,10 @@ class UserObjectMixins(object):
         secret_code = "".join(secrets.choice(digits) for _ in range(tokenRange))
         return secret_code
     
-    def send_mail(self, subject, template, recipient, recipient_email, token):
+    def send_mail(self, subject, template, recipient, recipient_email, verification_link):
         email_body = render_to_string(template, {
             "user": recipient,
-            'Secret': token,
+            "verification_link": verification_link,
         })
         email = EmailMessage(
             subject=subject,

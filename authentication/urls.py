@@ -13,4 +13,5 @@ urlpatterns = [
         "ResendResetToken/", views.ResendResetToken.as_view(), name="ResendResetToken"
     ),
     path("Admin/Registration/", views.AdminRegistrationView.as_view(), name="AdminRegistrationView"),
+    path('activate/<str:verification_link>/', views.ActivateAccountView.as_view(), name='activate_account'),
 ]

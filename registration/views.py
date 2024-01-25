@@ -16,16 +16,6 @@ import aiohttp
 # Create your views here.
 
 
-class UserObjectMixin(object):
-    model = None
-    session = requests.Session()
-    session.auth = config.AUTHS
-
-    def get_object(self, endpoint):
-        response = self.session.get(endpoint, timeout=10).json()
-        return response
-
-
 class registrationRequest(UserObjectMixin, View):
     def get(self, request):
         try:
