@@ -517,17 +517,20 @@ class FnGenerateReceipt(UserObjectMixins, View):
 
             for number in invoices[1]:
                 invoice_number = number["No"]
-            response = self.make_soap_request("FnGenerateReceipt", invoice_number)
-            buffer = BytesIO.BytesIO()
-            content = base64.b64decode(response)
-            buffer.write(content)
-            responses = HttpResponse(
-                buffer.getvalue(),
-                content_type="application/pdf",
-            )
-            responses["Content-Disposition"] = f"inline;filename={filenameFromApp}"
-            return responses
+            # response = self.make_soap_request("FnGenerateReceipt", invoice_number)
+            print(invoice_number)
+            # buffer = BytesIO.BytesIO()
+            # content = base64.b64decode(response)
+            # buffer.write(content)
+            # responses = HttpResponse(
+            #     buffer.getvalue(),
+            #     content_type="application/pdf",
+            # )
+            # responses["Content-Disposition"] = f"attachment;filename={filenameFromApp}.pdf"
+
+            return invoice_number
         except Exception as e:
+            print(e)
             messages.error(request, f"Failed, {e}")
             logging.exception(e)
             return redirect("dashboard")

@@ -279,7 +279,8 @@
                                             {% endif %}
                                         </td>
                                         <td>
-                                            <form id="FnGenerateReceipt" method="post">
+                                            <form action="{% url 'FnGenerateReceipt' permit.ManufacturingNo %}"
+                                                method="post">
                                                 {% csrf_token %}
                                                 <button type="submit" class="btn btn-info">
                                                     <i class="las la-download"></i> Download Receipt

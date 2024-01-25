@@ -214,7 +214,7 @@ class UserRegistrationView(UserObjectMixins,View):
                 messages.error(request, "User must be at least 18 years old.")
                 return redirect("AdminRegistrationView")
             
-            admin_user = get_user_model()(
+            user = get_user_model()(
                 email=email,
                 first_name=first_name,
                 middle_name=middle_name,
@@ -223,20 +223,15 @@ class UserRegistrationView(UserObjectMixins,View):
                 date_of_birth=date_of_birth,
                 password=make_password(password),
                 agree=agree,
-                is_admin=True,
+                is_admin=False,
                 is_staff=True,
                 is_superuser=True,
             )
-            admin_user.save()
-            admin_group = Group.objects.get(name='Admin')
-            normal_user_group = Group.objects.get(name='NormalUser')
-            admin_user.groups.add(admin_group, normal_user_group)
-            
+            user.save()           
             verification_link = get_random_string(length=32)
-            print(verification_link)
-            admin_user.verification_link = verification_link
-            admin_user.verification_link_created_at = timezone.now()
-            admin_user.save()
+            user.verification_link = verification_link
+            user.verification_link_created_at = timezone.now()
+            user.save()
             
             email_subject = "Activate your account"
             email_template = 'activate.html'
@@ -251,9 +246,15 @@ class UserRegistrationView(UserObjectMixins,View):
                 return redirect("Login")
             messages.error(request, "Verification email failed, contact admin")
             self.logger.error(f"Verification email for {email} failed")
-            return redirect("AdminRegistrationView")
+            return redirect("UserRegistrationView")
        
         except Exception as e:
             self.logger.error(f"{e}")
             messages.error(request, f"{e}")
-            return redirect("AdminRegistrationView")
+            return redirect("UserRegistrationView")
+        
+class Login(UserObjectMixins,View):
+    template_name = 'login.html'
+    logger = logging.getLogger('authentication')
+    def get(self,request):
+        return render(request, self.template_name)
