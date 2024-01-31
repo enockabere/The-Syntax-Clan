@@ -291,12 +291,13 @@ class UserRegistrationView(UserObjectMixins,View):
             messages.error(request, f"{e}")
             return redirect("UserRegistrationView")
         
-class Login(UserObjectMixins,View):
+class Login(UserObjectMixins, View):
     template_name = 'login.html'
     logger = logging.getLogger('authentication')
-    def get(self,request):
+
+    def get(self, request):
         return render(request, self.template_name)
-    
+
     def post(self, request):
         try:
             id_number = request.POST.get('id_number')
@@ -305,29 +306,37 @@ class Login(UserObjectMixins,View):
 
             user = authenticate(request, id_number=id_number, password=password)
 
-            if user is not None:
+            if user is not None and user.is_active and user.is_email_verified:
                 full_name = f"{user.first_name} {user.middle_name} {user.last_name}"
                 request.session['user_full_name'] = full_name
                 request.session['user_id_number'] = user.id_number
                 request.session['user_email'] = user.email
-                
+
                 user_roles = list(user.groups.values_list('name', flat=True))
                 request.session['user_roles'] = user_roles
                 print(user_roles)
-                
+
                 login(request, user)
-                
+
                 if remember:
                     request.session.set_expiry(30 * 24 * 60 * 60)
-                
-                return redirect('dashboard')  
+
+                return redirect('dashboard')
             else:
-                messages.error(request, 'Invalid login credentials')
+                if user is not None and not user.is_active:
+                    messages.error(request, 'Your account is not active. Please contact support.')
+                    return redirect('Login')
+                elif user is not None and not user.is_email_verified:
+                    messages.error(request, 'Your email is not verified. Please check your inbox for the verification link.')
+                    return redirect('Login')
+                else:
+                    messages.error(request, 'Invalid login credentials')
                 return redirect('Login')
         except Exception as e:
             self.logger.error(f"{e}")
             messages.error(request, f"{e}")
             return redirect("Login")
+
 
 class RequestPasswordResetView(UserObjectMixins,View):
     def post(self, request):
