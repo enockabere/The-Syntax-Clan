@@ -64,7 +64,7 @@ User Registration
                     </div>
 
                     <div class="card-body">
-                        <form method="POST" action="{% url 'AdminRegistrationView' %}" novalidate>
+                        <form method="POST" action="{% url 'UserRegistrationView' %}" novalidate>
                             {% csrf_token %}
                             <div class="row">
                                 <div class="form-group col-6">

@@ -38,10 +38,18 @@ class CustomUser(AbstractUser):
     is_email_verified = models.BooleanField(default=False)
     phone_number = models.CharField(max_length=12, blank=True, null=True, unique=True)
     
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+    
     def save(self, *args, **kwargs):
         if self.phone_number and not self.phone_number.startswith('254'):
             self.phone_number = f'254{self.phone_number}'
+
+        if not self.username:
+            self.username = self.email
+
         super().save(*args, **kwargs)
+
         
     groups = models.ManyToManyField(
         Group,

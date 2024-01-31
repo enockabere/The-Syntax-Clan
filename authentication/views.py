@@ -104,7 +104,6 @@ class AdminRegistrationView(UserObjectMixins,View):
             admin_user.groups.add(admin_group, normal_user_group)
             
             verification_link = get_random_string(length=32)
-            print(verification_link)
             admin_user.verification_link = verification_link
             admin_user.verification_link_created_at = timezone.now()
             admin_user.save()
@@ -260,7 +259,11 @@ class UserRegistrationView(UserObjectMixins,View):
                 is_superuser=True,
                 phone_number = phone_number
             )
-            user.save()           
+            user.save()    
+            
+            normal_user_group = Group.objects.get(name='NormalUser')
+            user.groups.add(normal_user_group)    
+               
             verification_link = get_random_string(length=32)
             user.verification_link = verification_link
             user.verification_link_created_at = timezone.now()

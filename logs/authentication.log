@@ -8,3 +8,20 @@ DETAIL:  Key (username)=() already exists.
 duplicate key value violates unique constraint "authentication_customuser_username_key"
 DETAIL:  Key (username)=() already exists.
 
+Group matching query does not exist.
+Group matching query does not exist.
+Email is already registered
+Group matching query does not exist.
+Group matching query does not exist.
+duplicate key value violates unique constraint "authentication_customuser_username_key"
+DETAIL:  Key (username)=() already exists.
+
+duplicate key value violates unique constraint "authentication_customuser_username_key"
+DETAIL:  Key (username)=() already exists.
+
+duplicate key value violates unique constraint "authentication_customuser_username_key"
+DETAIL:  Key (username)=() already exists.
+
+duplicate key value violates unique constraint "authentication_customuser_username_key"
+DETAIL:  Key (username)=() already exists.
+
