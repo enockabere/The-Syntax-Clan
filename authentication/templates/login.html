@@ -74,7 +74,7 @@ Login
                 <div class="d-block">
                   <label for="password" class="control-label">Password</label>
                   <div class="float-right">
-                    <a href="#" class="text-small br-text">
+                    <a href="#" class="text-small br-text" data-toggle="modal" data-target="#activeIngredients">
                       Forgot Password?
                     </a>
                   </div>
@@ -108,5 +108,28 @@ Login
     </div>
   </div>
 </section>
-
+<div class="modal fade" id="activeIngredients" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Add Ingredients</h5>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="{% url 'request_password_reset' %}">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-md-12">
+              <div class="mb-2">
+                <label class="form-label">Email <span class="text-danger">*</span></label>
+                <input type="email" class="form-control" name="reset_email" required>
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-info w-100 my-2">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

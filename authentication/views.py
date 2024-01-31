@@ -329,9 +329,9 @@ class Login(UserObjectMixins,View):
             messages.error(request, f"{e}")
             return redirect("Login")
 
-class RequestPasswordResetView(View):
+class RequestPasswordResetView(UserObjectMixins,View):
     def post(self, request):
-        email = request.POST.get('email')
+        email = request.POST.get('reset_email')
         user = get_user_model().objects.filter(email=email).first()
 
         if user:
@@ -360,6 +360,7 @@ class RequestPasswordResetView(View):
 class PasswordResetVerificationView(View):
     template_name = 'password_reset_verification.html'
     logger = logging.getLogger('authentication')
+
     def get(self, request, token):
         reset_request = get_object_or_404(PasswordResetRequest, token=token)
 
@@ -367,29 +368,33 @@ class PasswordResetVerificationView(View):
             reset_request.is_verified = True
             reset_request.save()
             messages.success(request, "Link validated successfully")
-            return render(request, self.template_name)
+            
+            return redirect('set_new_password', token=token)
         else:
             messages.error(request, 'Invalid reset link')
-            return redirect("Login")
+            return redirect('Login')
+
         
 class SetNewPasswordView(View):
     template_name = 'set_new_password.html'
     logger = logging.getLogger('authentication')
     def get(self, request, token):
         reset_request = get_object_or_404(PasswordResetRequest, token=token)
+        ctx = {}
 
         if reset_request.is_verified:
-            return render(request, self.template_name)
+            ctx = {"token":token}
+            return render(request, self.template_name,ctx)
         else:
             messages.error(request, 'Invalid verification link.')
-            return redirect('Login')
+            return redirect('set_new_password', token=token)
 
     def post(self, request, token):
         reset_request = get_object_or_404(PasswordResetRequest, token=token)
 
         if reset_request.is_verified:
             password = request.POST.get('password')
-            confirm_password = request.POST.get('confirm_password')
+            confirm_password = request.POST.get('password_confirm')
             
             if len(password) < 6:
                 self.logger.error("Password Too Short")
