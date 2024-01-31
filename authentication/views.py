@@ -1,5 +1,5 @@
 import logging
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib import messages
 from django.views import View
 from myRequest.views import UserObjectMixins
@@ -11,6 +11,8 @@ from django.utils import timezone
 from .models import CustomUser
 from django.contrib.auth.models import Group
 from django.contrib.auth import authenticate, login, logout
+from .models import PasswordResetRequest
+from django.urls import reverse
 
 
 
@@ -93,7 +95,7 @@ class AdminRegistrationView(UserObjectMixins,View):
                 date_of_birth=date_of_birth,
                 password=make_password(password),
                 agree=agree,
-                is_admin=True,
+                is_admin=True,  
                 is_staff=True,
                 is_superuser=True,
                 phone_number = phone_number
@@ -299,6 +301,7 @@ class Login(UserObjectMixins,View):
         try:
             id_number = request.POST.get('id_number')
             password = request.POST.get('password')
+            remember = request.POST.get('remember')
 
             user = authenticate(request, id_number=id_number, password=password)
 
@@ -313,6 +316,10 @@ class Login(UserObjectMixins,View):
                 print(user_roles)
                 
                 login(request, user)
+                
+                if remember:
+                    request.session.set_expiry(30 * 24 * 60 * 60)
+                
                 return redirect('dashboard')  
             else:
                 messages.error(request, 'Invalid login credentials')
@@ -321,7 +328,89 @@ class Login(UserObjectMixins,View):
             self.logger.error(f"{e}")
             messages.error(request, f"{e}")
             return redirect("Login")
+
+class RequestPasswordResetView(View):
+    def post(self, request):
+        email = request.POST.get('email')
+        user = get_user_model().objects.filter(email=email).first()
+
+        if user:
+            token = get_random_string(length=32)
+            reset_request = PasswordResetRequest.objects.create(user=user, token=token)
+            
+            subject = 'Password Reset Request'
+            recipient_name = f"{user.first_name} {user.middle_name} {user.last_name}"
+            email_template = 'reset_mail.html'
+            recipient_email = user.email
+            verification_link = request.build_absolute_uri(reverse('password_reset_verification', args=[token]))
+
+            send_validation_email = self.send_mail(subject,email_template,recipient_name,recipient_email,verification_link)
+            if send_validation_email == True:
+                messages.success(
+                    request, "Password reset email sent. Check your inbox."
+                )
+                return redirect("Login")
+            messages.error(request, "Email failed, contact admin")
+            self.logger.error(f"Reset email for {email} failed")
+            return redirect("Login")
+        else:
+            messages.error(request, 'Email not found.')
+            return redirect("Login")
         
+class PasswordResetVerificationView(View):
+    template_name = 'password_reset_verification.html'
+    logger = logging.getLogger('authentication')
+    def get(self, request, token):
+        reset_request = get_object_or_404(PasswordResetRequest, token=token)
+
+        if not reset_request.is_verified:
+            reset_request.is_verified = True
+            reset_request.save()
+            messages.success(request, "Link validated successfully")
+            return render(request, self.template_name)
+        else:
+            messages.error(request, 'Invalid reset link')
+            return redirect("Login")
+        
+class SetNewPasswordView(View):
+    template_name = 'set_new_password.html'
+    logger = logging.getLogger('authentication')
+    def get(self, request, token):
+        reset_request = get_object_or_404(PasswordResetRequest, token=token)
+
+        if reset_request.is_verified:
+            return render(request, self.template_name)
+        else:
+            messages.error(request, 'Invalid verification link.')
+            return redirect('Login')
+
+    def post(self, request, token):
+        reset_request = get_object_or_404(PasswordResetRequest, token=token)
+
+        if reset_request.is_verified:
+            password = request.POST.get('password')
+            confirm_password = request.POST.get('confirm_password')
+            
+            if len(password) < 6:
+                self.logger.error("Password Too Short")
+                messages.error(request, "Password Too Short")
+                return redirect("set_new_password")
+            
+            if password != confirm_password:
+                self.logger.error("Password Mismatch")
+                messages.error(request, "Password Mismatch")
+                return redirect("set_new_password")
+        
+            user = reset_request.user
+            user.set_password(password)
+            user.save()
+            messages.success(request, 'Password reset successfully. You can now log in with your new password.')
+            return redirect('Login')
+        else:
+            messages.error(request, 'Invalid verification link.')
+            self.logger.error("Invalid verification link.")
+            return redirect('Login')
+            
 class LogoutView(View):
     logger = logging.getLogger('authentication')
     def get(self, request):
