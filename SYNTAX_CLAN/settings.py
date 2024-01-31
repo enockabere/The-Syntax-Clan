@@ -49,6 +49,9 @@ DEBUG = config("DEBUG", default=False, cast=bool)
 
 ALLOWED_HOSTS = [".localhost", ".127.0.0.1"]
 
+AUTHENTICATION_BACKENDS = ['authentication.backends.IdNumberBackend']
+
+
 AUTH_USER_MODEL = "authentication.CustomUser"
 
 INSTALLED_APPS = [

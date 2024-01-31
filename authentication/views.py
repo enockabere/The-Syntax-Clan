@@ -10,6 +10,8 @@ from datetime import datetime
 from django.utils import timezone
 from .models import CustomUser
 from django.contrib.auth.models import Group
+from django.contrib.auth import authenticate, login, logout
+
 
 
 class AdminRegistrationView(UserObjectMixins,View):
@@ -258,3 +260,37 @@ class Login(UserObjectMixins,View):
     logger = logging.getLogger('authentication')
     def get(self,request):
         return render(request, self.template_name)
+    
+    def post(self, request):
+        try:
+            id_number = request.POST.get('id_number')
+            password = request.POST.get('password')
+
+            user = authenticate(request, id_number=id_number, password=password)
+
+            if user is not None:
+                full_name = f"{user.first_name} {user.middle_name} {user.last_name}"
+                request.session['user_full_name'] = full_name
+                request.session['user_id_number'] = user.id_number
+                request.session['user_email'] = user.email
+                
+                user_roles = list(user.groups.values_list('name', flat=True))
+                request.session['user_roles'] = user_roles
+                print(user_roles)
+                
+                login(request, user)
+                return redirect('dashboard')  
+            else:
+                messages.error(request, 'Invalid login credentials')
+                return redirect('Login')
+        except Exception as e:
+            self.logger.error(f"{e}")
+            messages.error(request, f"{e}")
+            return redirect("Login")
+        
+class LogoutView(View):
+    logger = logging.getLogger('authentication')
+    def get(self, request):
+        request.session.flush()
+        logout(request)
+        return redirect('Login')

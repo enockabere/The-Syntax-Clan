@@ -2,8 +2,8 @@
 <div class="main-sidebar sidebar-style-2">
   <aside id="sidebar-wrapper">
     <div class="sidebar-brand">
-      <img src="{% static 'img/logo/logo.png' %}" class="logo img-fluid img-responsive" alt="logo" height="60"
-        width="120" srcset="">
+      <img src="{% static 'img/logo/lighting.png' %}" class="logo img-fluid img-responsive" alt="logo" height="40"
+        width="40" srcset="">
     </div>
     <div class="sidebar-brand sidebar-brand-sm">
       <a href="{% url 'dashboard' %}">VMD</a>
@@ -12,67 +12,26 @@
       <li class="sidebar-link"><a class="nav-link" href="{% url 'dashboard' %}"><i class="fas fa-th"></i> <span>General
             Dashboard</span></a>
       </li>
-      <li class="menu-header">Product Registration</li>
+      <li class="menu-header">User Management</li>
       <li class="sidebar-link dropdown">
         <a href="#" class="nav-link has-dropdown"><i class="fas fa-columns"></i> <span>Registration</span></a>
         <ul class="dropdown-menu">
-          <li><a class="nav-link" href="{% url 'Registration' %}">Register</a></li>
-          <li><a class="nav-link" href="{% url 'allApplications' %}">My Product Applications</a></li>
-          <!-- <li><a class="nav-link" href="{% url 'renew' %}">Renew Registration</a></li> -->
+          <li><a class="nav-link" href="">Register</a></li>
+          <li><a class="nav-link" href="">My Product Applications</a></li>
+
         </ul>
       </li>
       <li class="sidebar-link dropdown">
         <a href="#" class="nav-link has-dropdown"><i class="fas fa-columns"></i> <span>Retention</span></a>
         <ul class="dropdown-menu">
-          <li><a class="nav-link" href="{% url 'retention' %}">New Retention</a></li>
-          <li><a class="nav-link" href="{% url 'BulkRetention' %}">Bulk Retention</a></li>
-          <li><a class="nav-link" href="{% url 'MyRetentions' %}">My Retentions</a></li>
-        </ul>
-      </li>
-      <!-- <li><a class="nav-link" href="{% url 'gmp' %}"><i class="fas fa-columns"></i>
-          <span>Good Manufacturing Practices</span></a>
-      </li> -->
-      <li class="menu-header">Compliance & Surveillance</li>
-      <li class="sidebar-link dropdown">
-        <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-columns"></i>
-          <span> Wholesale Dealers</span></a>
-        <ul class="dropdown-menu">
-          <li class=""><a class="nav-link" href="{% url 'permit' %}">New Application</a></li>
-          <li><a class="nav-link" href="{% url 'WholesaleApplications' %}">My Applications</a></li>
+          <li><a class="nav-link" href="">New Retention</a></li>
+          <li><a class="nav-link" href="">Bulk Retention</a></li>
+          <li><a class="nav-link" href="">My Retentions</a></li>
         </ul>
       </li>
 
-      <li class="sidebar-link dropdown">
-        <a href="#" class="nav-link has-dropdown"><i class="fas fa-columns"></i> <span>Retail Pharmacy</span></a>
-        <ul class="dropdown-menu">
-          <li><a class="nav-link" href="{% url 'RetailersPermit' %}">New Application</a></li>
-          <li><a class="nav-link" href="{% url 'RetailApplications' %}">My Applications</a></li>
-        </ul>
-      </li>
-
-      <li class="sidebar-link dropdown">
-        <a href="#" class="nav-link has-dropdown"><i class="fas fa-columns"></i> <span>Manufacturing License</span></a>
-        <ul class="dropdown-menu">
-          <li><a class="nav-link" href="{% url 'ManufacturingLicense' %}">New Application</a></li>
-          <li><a class="nav-link" href="{% url 'ManufacturingApplications' %}">My Applications</a></li>
-        </ul>
-      </li>
-      <li class="sidebar-link dropdown">
-        <a href="#" class="nav-link has-dropdown"><i class="fas fa-columns"></i> <span>Advertisement Permit</span></a>
-        <ul class="dropdown-menu">
-          <li><a class="nav-link" href="{% url 'advertise' %}">New Application</a></li>
-          <li><a class="nav-link" href="{% url 'MyAdverts' %}">My Applications</a></li>
-        </ul>
-      </li>
-      <li class="sidebar-link dropdown">
-        <a href="#" class="nav-link has-dropdown"><i class="fas fa-columns"></i> <span>Disposal Request</span></a>
-        <ul class="dropdown-menu">
-          <li><a class="nav-link" href="{% url 'Disposal' %}">New Application</a></li>
-          <li><a class="nav-link" href="{% url 'DisposalApplications' %}">My Applications</a></li>
-        </ul>
-      </li>
       <li class="menu-header">Other</li>
-      <li class="sidebar-link"><a class="nav-link" href="{% url 'faq' %}"><i class="fas fa-ellipsis-h"></i>
+      <li class="sidebar-link"><a class="nav-link" href=""><i class="fas fa-ellipsis-h"></i>
           <span>FAQs</span></a>
       </li>
       <li><a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>
