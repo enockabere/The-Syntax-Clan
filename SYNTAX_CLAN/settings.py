@@ -32,6 +32,11 @@ LOGGING = {
             "class": "logging.FileHandler",
             "filename": os.path.join(LOGGING_DIR, "user_dashboard.log"),
         },
+        "admin_dashboard_file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(LOGGING_DIR, "admin_dashboard.log"),
+        },
     },
     "loggers": {
         "django": {
@@ -46,6 +51,11 @@ LOGGING = {
         },
         "user_dashboard": {
             "handlers": ["user_dashboard_file"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+        "admin_dashboard": {
+            "handlers": ["admin_dashboard_file"],
             "level": "DEBUG",
             "propagate": True,
         },

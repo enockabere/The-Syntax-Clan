@@ -8,304 +8,63 @@
     <h1>Dashboard</h1>
   </div>
   <div class="row">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-header">
-          <h4>
-            {% if q is None %}
-            Wholesale Permit Documents History
-            {% elif q == "Manufacturing" %}
-            Manufacturing Licence Document History
-            {% else %}
-            {{q}} Permit Documents History
-            {% endif %}
-          </h4>
-          <div class="card-header-action">
-            <div class="dropdown">
-              <a href="#" class="dropdown-toggle btn btn-primary" data-toggle="dropdown">Filter</a>
-              <div class="dropdown-menu dropdown-menu-right">
-                <a href="{% url 'dashboard' %}?q=Wholesale" class="dropdown-item has-icon"><i
-                    class="far fa-circle"></i>Wholesale Permit</a>
-                <a href="{% url 'dashboard' %}?q=Retail" class="dropdown-item has-icon"><i
-                    class="far fa-circle"></i>Retail Permit</a>
-                <a href="{% url 'dashboard' %}?q=Advertisement" class="dropdown-item has-icon"><i
-                    class="far fa-circle"></i> Advertisement Permit</a>
-                <a href="{% url 'dashboard' %}?q=Disposal" class="dropdown-item has-icon"><i
-                    class="far fa-circle"></i>Disposal Permit</a>
-                <a href="{% url 'dashboard' %}?q=Manufacturing" class="dropdown-item has-icon"><i
-                    class="far fa-circle"></i> Manufacturing Licence</a>
-              </div>
-            </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+      <div class="card card-statistic-1">
+        <div class="card-icon bg-primary">
+          <i class="far fa-user"></i>
+        </div>
+        <div class="card-wrap">
+          <div class="card-header">
+            <h4>Total Admin Members</h4>
+          </div>
+          <div class="card-body">
+            {{admin_users_count}}
           </div>
         </div>
-        <div class="card-body">
-          {% if q is None or q == "Wholesale" %}
-          <div class="table-responsive">
-            <table class="table table-striped data_table">
-              <thead>
-                <tr>
-                  <th>Premise No</th>
-                  <th>Document Date</th>
-                  <th>Premise Name</th>
-                  <th>Paid</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for res in all %}
-                <tr>
-                  <td>{{res.PremiseNo}}</td>
-                  <td id="DocumentDate{{res.PremiseNo}}">{{res.DocumentDate}}</td>
-                  <td>{{res.Premise_Name}}</td>
-                  <td>
-                    {% if res.Paid %}
-                    Yes
-                    {% else %}
-                    No
-                    {% endif %}
-                  </td>
-                  <td>
-                    {% if res.Status == "Open" %}
-                    <div class="badge badge-info">{{res.Status}}</div>
-                    {% elif res.Status == "Processing" %}
-                    <div class="badge badge-warning">{{res.Status}}</div>
-                    {% elif res.Status == "Approved" %}
-                    <div class="badge badge-success">{{res.Status}}</div>
-                    {% elif res.Status == "Rejected" %}
-                    <div class="badge badge-danger">{{res.Status}}</div>
-                    {% endif %}
-                  </td>
-                  <td>
-                    <a href="{% url 'PermitDetails' res.PremiseNo %}" type="button" class="btn btn-primary"> View <i
-                        class="bi bi-eye"></i></a>
-                  </td>
-                  <script>
-                    $(document).ready(function () {
-                      $("#DocumentDate{{res.PremiseNo}}")
-                        .empty().append(moment(
-                            '{{res.DocumentDate}}', "YYYY-MM-DD")
-                          .format(
-                            'Do MMM YYYY'));
-                    })
-                  </script>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+      <div class="card card-statistic-1">
+        <div class="card-icon bg-success">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="card-wrap">
+          <div class="card-header">
+            <h4>Total Active Members</h4>
           </div>
-          {% elif q == "Retail" %}
-          <div class="table-responsive">
-            <table class="table table-striped data_table">
-              <thead>
-                <tr>
-                  <th>Premise No</th>
-                  <th>Document Date</th>
-                  <th>Premise Name</th>
-                  <th>Paid</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for res in all %}
-                <tr>
-                  <td>{{res.RetailDealersNo}}</td>
-                  <td id="DocumentDate{{res.RetailDealersNo}}">{{res.DocumentDate}}</td>
-                  <td>{{res.PremiseName}}</td>
-                  <td>
-                    {% if res.Paid %}
-                    Yes
-                    {% else %}
-                    No
-                    {% endif %}
-                  </td>
-                  <td>
-                    {% if res.Status == "Open" %}
-                    <div class="badge badge-info">{{res.Status}}</div>
-                    {% elif res.Status == "Processing" %}
-                    <div class="badge badge-warning">{{res.Status}}</div>
-                    {% elif res.Status == "Approved" %}
-                    <div class="badge badge-success">{{res.Status}}</div>
-                    {% elif res.Status == "Rejected" %}
-                    <div class="badge badge-danger">{{res.Status}}</div>
-                    {% endif %}
-                  </td>
-                  <td>
-                    <a href="{% url 'RetailerPermitDetails' res.RetailDealersNo %}" type="button"
-                      class="btn btn-primary"> View <i class="bi bi-eye"></i></a>
-                  </td>
-                  <script>
-                    $(document).ready(function () {
-                      $("#DocumentDate{{res.RetailDealersNo}}")
-                        .empty().append(moment(
-                            '{{res.DocumentDate}}', "YYYY-MM-DD")
-                          .format(
-                            'Do MMM YYYY'));
-                    })
-                  </script>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+          <div class="card-body">
+            {{active_verified_users_count}}
           </div>
-          {% elif q == "Advertisement" %}
-          <div class="table-responsive">
-            <table class="table table-striped data_table">
-              <thead>
-                <tr>
-                  <th>Code</th>
-                  <th>Document Date</th>
-                  <th>Form Of Advertisement</th>
-                  <th>Paid</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for res in all %}
-                <tr>
-                  <td>{{res.AdvartisementNo}}</td>
-                  <td id="DocumentDate{{res.AdvartisementNo}}">{{res.DatePosted}}</td>
-                  <td>{{res.FormOfAdvertisement}}</td>
-                  <td>
-                    {% if res.Paid %}
-                    Yes
-                    {% else %}
-                    No
-                    {% endif %}
-                  </td>
-                  <td>
-                    {% if res.Status == "Open" %}
-                    <div class="badge badge-info">{{res.Status}}</div>
-                    {% elif res.Status == "Processing" %}
-                    <div class="badge badge-warning">{{res.Status}}</div>
-                    {% elif res.Status == "Approved" %}
-                    <div class="badge badge-success">{{res.Status}}</div>
-                    {% elif res.Status == "Rejected" %}
-                    <div class="badge badge-danger">{{res.Status}}</div>
-                    {% endif %}
-                  </td>
-                  <td>
-                    <a href="{% url 'AdvertiseDetails' res.AdvartisementNo %}" type="button" class="btn btn-primary">
-                      View <i class="bi bi-eye"></i></a>
-                  </td>
-                </tr>
-                <script>
-                  $(document).ready(function () {
-                    $("#DocumentDate{{res.AdvartisementNo}}")
-                      .empty().append(moment(
-                          '{{res.DocumentDate}}', "YYYY-MM-DD")
-                        .format(
-                          'Do MMM YYYY'));
-                  })
-                </script>
-                {% endfor %}
-              </tbody>
-            </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+      <div class="card card-statistic-1">
+        <div class="card-icon bg-warning">
+          <i class="far fa-file"></i>
+        </div>
+        <div class="card-wrap">
+          <div class="card-header">
+            <h4>Reports</h4>
           </div>
-          {% elif q == "Disposal" %}
-          <div class="table-responsive">
-            <table class="table table-striped data_table">
-              <thead>
-                <tr>
-                  <th>Code</th>
-                  <th>Document Date</th>
-                  <th>Place Of Disposal</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for res in all %}
-                <tr>
-                  <td>{{res.DisposalNo}}</td>
-                  <td id="DocumentDate{{res.DisposalNo}}">{{res.DocumentDate}}</td>
-                  <td>{{res.Place_Of_Disposal}}</td>
-                  <td>
-                    {% if res.Status == "Open" %}
-                    <div class="badge badge-info">{{res.Status}}</div>
-                    {% elif res.Status == "Processing" %}
-                    <div class="badge badge-warning">{{res.Status}}</div>
-                    {% elif res.Status == "Approved" %}
-                    <div class="badge badge-success">{{res.Status}}</div>
-                    {% elif res.Status == "Rejected" %}
-                    <div class="badge badge-danger">{{res.Status}}</div>
-                    {% endif %}
-                  </td>
-                  <td>
-                    <a href="{% url 'DisposalDetails' res.DisposalNo %}" type="button" class="btn btn-primary">
-                      View <i class="bi bi-eye"></i></a>
-                  </td>
-                  <script>
-                    $(document).ready(function () {
-                      $("#DocumentDate{{res.DisposalNo}}")
-                        .empty().append(moment(
-                            '{{res.DocumentDate}}', "YYYY-MM-DD")
-                          .format(
-                            'Do MMM YYYY'));
-                    })
-                  </script>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+          <div class="card-body">
+            0
           </div>
-          {% elif q == "Manufacturing" %}
-          <div class="table-responsive">
-            <table class="table table-striped data_table">
-              <thead>
-                <tr>
-                  <th>Code</th>
-                  <th>Document Date</th>
-                  <th>Paid</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for res in all %}
-                <tr>
-                  <td>{{res.ManufacturingNo}}</td>
-                  <td id="DocumentDate{{res.ManufacturingNo}}">{{res.documentDate}}</td>
-                  <td>
-                    {% if res.Paid %}
-                    Yes
-                    {% else %}
-                    No
-                    {% endif %}
-                  </td>
-                  <td>
-                    {% if res.Status == "Open" %}
-                    <div class="badge badge-info">{{res.Status}}</div>
-                    {% elif res.Status == "Processing" %}
-                    <div class="badge badge-warning">{{res.Status}}</div>
-                    {% elif res.Status == "Approved" %}
-                    <div class="badge badge-success">{{res.Status}}</div>
-                    {% elif res.Status == "Rejected" %}
-                    <div class="badge badge-danger">{{res.Status}}</div>
-                    {% endif %}
-                  </td>
-                  <td>
-                    <a href="{% url 'ManufacturingLicenseDetails' res.ManufacturingNo %}" type="button"
-                      class="btn btn-primary">
-                      View <i class="bi bi-eye"></i></a>
-                  </td>
-                  <script>
-                    $(document).ready(function () {
-                      $("#DocumentDate{{res.ManufacturingNo}}")
-                        .empty().append(moment(
-                            '{{res.documentDate}}', "YYYY-MM-DD")
-                          .format(
-                            'Do MMM YYYY'));
-                    })
-                  </script>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+      <div class="card card-statistic-1">
+        <div class="card-icon bg-success">
+          <i class="fas fa-circle"></i>
+        </div>
+        <div class="card-wrap">
+          <div class="card-header">
+            <h4>Users</h4>
           </div>
-          {% endif %}
+          <div class="card-body">
+            0
+          </div>
         </div>
       </div>
     </div>
