@@ -34,6 +34,8 @@ class AdminRegistrationView(UserObjectMixins,View):
             date_of_birth = datetime.strptime(
                     request.POST.get("date_of_birth"), "%Y-%m-%d"
                 ).date()
+            phone_number = request.POST.get('phone_number')
+            
 
             if get_user_model().objects.filter(email=email).exists():
                 self.logger.error("Email is already registered")
@@ -70,6 +72,18 @@ class AdminRegistrationView(UserObjectMixins,View):
                 messages.error(request, "User must be at least 18 years old.")
                 return redirect("AdminRegistrationView")
             
+            if phone_number:
+                if phone_number.startswith('0') and len(phone_number) == 10:
+                    phone_number = phone_number.lstrip('0')
+                    phone_number = f'254{phone_number}'
+                    
+                elif not phone_number.startswith('0') and len(phone_number) == 9:
+                    phone_number = f'254{phone_number}'
+
+                if len(phone_number) > 12:
+                    messages.error(request, 'Phone number length cannot exceed 12 characters.')
+                    return redirect("AdminRegistrationView")
+            
             admin_user = get_user_model()(
                 email=email,
                 first_name=first_name,
@@ -82,6 +96,7 @@ class AdminRegistrationView(UserObjectMixins,View):
                 is_admin=True,
                 is_staff=True,
                 is_superuser=True,
+                phone_number = phone_number
             )
             admin_user.save()
             admin_group = Group.objects.get(name='Admin')
@@ -180,31 +195,34 @@ class UserRegistrationView(UserObjectMixins,View):
             date_of_birth = datetime.strptime(
                     request.POST.get("date_of_birth"), "%Y-%m-%d"
                 ).date()
+            
+            phone_number = request.POST.get('phone_number')
+            
 
             if get_user_model().objects.filter(email=email).exists():
                 self.logger.error("Email is already registered")
                 messages.error(request, "Email is already registered")
-                return redirect("AdminRegistrationView")
+                return redirect("UserRegistrationView")
             
             if get_user_model().objects.filter(id_number=id_number).exists():
                 self.logger.error("ID or Passport Number is already registered")
                 messages.error(request, "ID or Passport Number is already registered")
-                return redirect("AdminRegistrationView")
+                return redirect("UserRegistrationView")
             
             if len(id_number) < 7 or len(id_number) > 9:
                 self.logger.error("Invalid ID or Passport Number")
                 messages.error(request, "Invalid ID or Passport Number")
-                return redirect("AdminRegistrationView")
+                return redirect("UserRegistrationView")
             
             if password != password_confirm:
                 self.logger.error("Password Mismatch")
                 messages.error(request, "Password Mismatch")
-                return redirect("AdminRegistrationView")
+                return redirect("UserRegistrationView")
             
             if not agree or agree == "":
                 self.logger.error("Agree with the terms and conditions to continue")
                 messages.error(request, "Agree with the terms and conditions to continue")
-                return redirect("AdminRegistrationView")
+                return redirect("UserRegistrationView")
             else:
                 agree = eval(agree)
                 
@@ -214,7 +232,19 @@ class UserRegistrationView(UserObjectMixins,View):
             if age < 18:
                 self.logger.error("User must be at least 18 years old.")
                 messages.error(request, "User must be at least 18 years old.")
-                return redirect("AdminRegistrationView")
+                return redirect("UserRegistrationView")
+            
+            if phone_number:
+                if phone_number.startswith('0') and len(phone_number) == 10:
+                    phone_number = phone_number.lstrip('0')
+                    phone_number = f'254{phone_number}'
+                    
+                elif not phone_number.startswith('0') and len(phone_number) == 9:
+                    phone_number = f'254{phone_number}'
+
+                if len(phone_number) > 12:
+                    messages.error(request, 'Phone number length cannot exceed 12 characters.')
+                    return redirect("UserRegistrationView")
             
             user = get_user_model()(
                 email=email,
@@ -228,6 +258,7 @@ class UserRegistrationView(UserObjectMixins,View):
                 is_admin=False,
                 is_staff=True,
                 is_superuser=True,
+                phone_number = phone_number
             )
             user.save()           
             verification_link = get_random_string(length=32)

@@ -36,6 +36,12 @@ class CustomUser(AbstractUser):
     verification_link = models.CharField(max_length=255, blank=True)
     verification_link_created_at = models.DateTimeField(null=True, blank=True)
     is_email_verified = models.BooleanField(default=False)
+    phone_number = models.CharField(max_length=12, blank=True, null=True, unique=True)
+    
+    def save(self, *args, **kwargs):
+        if self.phone_number and not self.phone_number.startswith('254'):
+            self.phone_number = f'254{self.phone_number}'
+        super().save(*args, **kwargs)
         
     groups = models.ManyToManyField(
         Group,
