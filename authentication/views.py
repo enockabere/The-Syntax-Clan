@@ -13,7 +13,9 @@ from django.contrib.auth.models import Group
 from django.contrib.auth import authenticate, login, logout
 from .models import PasswordResetRequest
 from django.urls import reverse
-
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.http import HttpResponseRedirect
 
 
 class AdminRegistrationView(UserObjectMixins,View):
@@ -308,20 +310,27 @@ class Login(UserObjectMixins, View):
 
             if user is not None and user.is_active and user.is_email_verified:
                 full_name = f"{user.first_name} {user.middle_name} {user.last_name}"
-                request.session['user_full_name'] = full_name
-                request.session['user_id_number'] = user.id_number
-                request.session['user_email'] = user.email
-
                 user_roles = list(user.groups.values_list('name', flat=True))
-                request.session['user_roles'] = user_roles
-                print(user_roles)
+               
+                user_data = {
+                    "full_name":full_name,
+                    "id_number":user.id_number,
+                    "email": user.email,
+                    "user_roles":user_roles,
+                    "current_role": None
+                }
+                
+                request.session['user_data'] = user_data
 
                 login(request, user)
 
                 if remember:
                     request.session.set_expiry(30 * 24 * 60 * 60)
-
-                return redirect('dashboard')
+                    
+                if len(user_roles) == 1:
+                    return redirect('user_dashboard')
+                else:
+                    return redirect('role_select')
             else:
                 if user is not None and not user.is_active:
                     messages.error(request, 'Your account is not active. Please contact support.')
@@ -431,3 +440,63 @@ class LogoutView(View):
         request.session.flush()
         logout(request)
         return redirect('Login')
+    
+class RoleSelect(UserObjectMixins, View):
+    template_name = 'role_select.html'
+    logger = logging.getLogger('authentication')
+    
+    @method_decorator(login_required(login_url='Login')) 
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def get(self, request):
+        try:
+            user_data = request.session['user_data']
+            
+            ctx = {
+                "user_data":user_data
+            }
+        except Exception as e:
+            self.logger.error(f"{e}")
+            messages.error(request, f"{e}")
+            return redirect("Login")
+        return render(request, self.template_name,ctx)
+    def post(self, request):
+        try:
+            current_role = request.POST.get('current_role')
+            
+            if not current_role or current_role == "":
+                messages.error(request, "Please select a role")
+                return redirect("role_select")
+            
+            user_data = request.session["user_data"]
+            
+            user_data["current_role"] = current_role
+            request.session["user_data"] = user_data
+            
+            if request.session["user_data"]["current_role"] == "Admin":
+                messages.success(
+                    request,
+                    f'Successfully logged in as {request.session["user_data"]["full_name"]}',
+                )
+                saved_url = request.session.get("saved_url")
+                if saved_url is not None:
+                    if "saved_url" in request.session:
+                        del request.session["saved_url"]
+                    return HttpResponseRedirect(saved_url)
+                else:
+                    return redirect("dashboard")
+            else:
+                messages.success(
+                    request,
+                    f'Successfully logged in as {request.session["user_data"]["full_name"]}',
+                )
+                return redirect("user_dashboard")
+        except Exception as e:
+            self.logger.error(f"{e}")
+            messages.error(request, f"{e}")
+            return redirect("role_select")
+
+            
+            
+            

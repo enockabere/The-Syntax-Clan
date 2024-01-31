@@ -27,6 +27,11 @@ LOGGING = {
             "class": "logging.FileHandler",
             "filename": os.path.join(LOGGING_DIR, "authentication.log"),
         },
+        "user_dashboard_file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(LOGGING_DIR, "user_dashboard.log"),
+        },
     },
     "loggers": {
         "django": {
@@ -36,6 +41,11 @@ LOGGING = {
         },
         "authentication": {
             "handlers": ["authentication_file"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+        "user_dashboard": {
+            "handlers": ["user_dashboard_file"],
             "level": "DEBUG",
             "propagate": True,
         },

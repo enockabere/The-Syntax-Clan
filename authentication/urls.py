@@ -10,4 +10,5 @@ urlpatterns = [
     path('request-password-reset/', views.RequestPasswordResetView.as_view(), name='request_password_reset'),
     path('password-reset-verification/<str:token>/', views.PasswordResetVerificationView.as_view(), name='password_reset_verification'),
     path('set-new-password/<str:token>/', views.SetNewPasswordView.as_view(), name='set_new_password'),
+    path("role-select/", views.RoleSelect.as_view(), name="role_select")
 ]
