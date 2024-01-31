@@ -1,0 +1,13 @@
+.env
+venv/
+logs/
+tests.py
+notes.txt
+Pipfile
+Pipfile.lock
+mydatabase
+__pycache__/
+run.py
+test.html
+.vscode/
+new.js
