@@ -14,22 +14,14 @@
       </li>
       <li class="menu-header">User Management</li>
       <li class="sidebar-link dropdown">
-        <a href="#" class="nav-link has-dropdown"><i class="fas fa-columns"></i> <span>Registration</span></a>
+        <a href="#" class="nav-link has-dropdown"><i class="fas fa-users"></i> <span>Manage Users</span></a>
         <ul class="dropdown-menu">
-          <li><a class="nav-link" href="">Register</a></li>
-          <li><a class="nav-link" href="">My Product Applications</a></li>
+          <li><a class="nav-link" href="">Users Dashboard</a></li>
+          <li><a class="nav-link" href="{% url 'roles' %}">Role Center</a></li>
+          <li><a class="nav-link" href="{% url 'admin_all_users' %}">All Users</a></li>
 
         </ul>
       </li>
-      <li class="sidebar-link dropdown">
-        <a href="#" class="nav-link has-dropdown"><i class="fas fa-columns"></i> <span>Retention</span></a>
-        <ul class="dropdown-menu">
-          <li><a class="nav-link" href="">New Retention</a></li>
-          <li><a class="nav-link" href="">Bulk Retention</a></li>
-          <li><a class="nav-link" href="">My Retentions</a></li>
-        </ul>
-      </li>
-
       <li class="menu-header">Other</li>
       <li class="sidebar-link"><a class="nav-link" href=""><i class="fas fa-ellipsis-h"></i>
           <span>FAQs</span></a>

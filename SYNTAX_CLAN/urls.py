@@ -18,4 +18,5 @@ urlpatterns = [
     path("selfservice/", include("advertisement.urls")),
     path("selfservice/", include("disposal.urls")),
     path("selfservice/", include("manufacturing.urls")),
+    path("selfservice/", include("user_management.urls")),
 ]

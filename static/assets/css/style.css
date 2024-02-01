@@ -2084,7 +2084,7 @@ h6 .badge {
   left: 0;
   width: 100%;
   height: 115px;
-  background-color: #0974bd;
+  background-color: #ff6022;
   z-index: -1;
 }
 
@@ -3040,7 +3040,7 @@ pre {
   border-radius: 5px;
   height: 8px;
   width: 30px;
-  background-color: #0974bd;
+  background-color: #ff6022;
   display: inline-block;
   float: left;
   margin-top: 6px;

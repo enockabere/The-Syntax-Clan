@@ -1,0 +1,301 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="{% static 'plugins/iziToast-master/dist/js/iziToast.min.js' %}" type="text/javascript"></script>
+<section class="section">
+    <div class="section-header">
+        <h1>All Roles</h1>
+        <div class="section-header-breadcrumb">
+            <div class="breadcrumb-item active"><a href="{% url 'dashboard' %}" class="br-text">Dashboard</a></div>
+            <div class="breadcrumb-item">Role Center</div>
+        </div>
+    </div>
+    <div class="section-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="section-title">Role List</h2>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_role"><i
+                    class="fas fa-plus"></i> Add Role</button>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                {% if messages %}
+                {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                <script>
+                    iziToast.show({
+                        theme: 'dark',
+                        backgroundColor: '#ff6022',
+                        icon: 'las la-check-circle',
+                        title: '{{message}}',
+                        position: 'topRight',
+                        progressBarColor: '#F4F6F7',
+                    });
+                </script>
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+                <script>
+                    iziToast.show({
+                        theme: 'dark',
+                        backgroundColor: '#3abaf4',
+                        icon: 'las la-exclamation',
+                        title: '{{message}}',
+                        position: 'topRight',
+                        progressBarColor: '#F4F6F7',
+                    });
+                </script>
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <script>
+                    iziToast.show({
+                        theme: 'dark',
+                        backgroundColor: '#000',
+                        icon: 'las la-exclamation-circle',
+                        title: '{{message}}',
+                        position: 'topRight',
+                        progressBarColor: '#F4F6F7',
+                    });
+                </script>
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <ul class="nav nav-tabs" id="myTab2" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="home-tab2" data-toggle="tab" href="#home2" role="tab"
+                                    aria-controls="home" aria-selected="true">All Roles
+                                    ({{all_roles|length}})</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content tab-bordered" id="myTab3Content">
+                            <div class="tab-pane fade show active" id="home2" role="tabpanel"
+                                aria-labelledby="home-tab2">
+                                <div class="table-responsive">
+                                    <table class="table table-striped data_table">
+                                        <thead>
+                                            <tr>
+                                                <th>role id</th>
+                                                <th>name</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for role in all_roles %}
+                                            <tr>
+                                                <td>{{role.id}}</td>
+                                                <td>{{role.name}}</td>
+                                                <td>
+                                                    <div class="dropdown">
+                                                        <a href="#" class="dropdown-toggle btn btn-primary w-100"
+                                                            data-toggle="dropdown">Manage</a>
+                                                        <div class="dropdown-menu dropdown-menu-right">
+                                                            <a href="#" class="dropdown-item has-icon"
+                                                                data-toggle="modal"
+                                                                data-target="#edit_user{{user.id}}"><i
+                                                                    class="fas fa-pencil-alt"></i>Edit User</a>
+                                                            <a href="#" class="dropdown-item has-icon"
+                                                                data-toggle="modal"
+                                                                data-target="#add_role_user{{user.id}}"><i
+                                                                    class="fas fa-user-plus"></i> Assign Role</a>
+                                                            <a href="#" class="dropdown-item has-icon"
+                                                                data-toggle="modal"
+                                                                data-target="#remove_role_user{{user.id}}"><i
+                                                                    class="fas fa-user-minus"></i> Remove Role</a>
+                                                            <a href="#" class="dropdown-item has-icon"
+                                                                data-toggle="modal"
+                                                                data-target="#view_user{{user.id}}"><i
+                                                                    class="fas fa-ellipsis-h"></i> View User</a>
+                                                            <div class="dropdown-divider"></div>
+                                                        </div>
+                                                    </div>
+
+                                                </td>
+                                            </tr>
+                                            <div class="modal fade" id="edit_user{{user.id}}" data-bs-backdrop="static"
+                                                data-bs-keyboard="false" tabindex="-1"
+                                                aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                <div
+                                                    class="modal-dialog modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="staticBackdropLabel">
+                                                                Modify {{user.first_name}} {{user.middle_name}}
+                                                                {{user.last_name}} </h5>
+                                                        </div>
+                                                        <div class="modal-body" style="background-color: #E5E8E8;">
+                                                            <div class="row mt-sm-4">
+                                                                <div class="col-md-12">
+                                                                    <div class="card profile-widget">
+                                                                        <div class="profile-widget-header">
+                                                                            <img alt="image"
+                                                                                src="{% static 'img/logo/Ellipse 56.png' %}"
+                                                                                class="rounded-circle profile-widget-picture">
+                                                                        </div>
+                                                                        <div class="card-footer">
+                                                                            <form action="{% url 'admin_edit_users' %}"
+                                                                                method="post">
+                                                                                {% csrf_token %}
+                                                                                <input type="hidden" name="user_id"
+                                                                                    value="{{user.id}}">
+                                                                                <div class="row ml-2 my-2">
+                                                                                    <div class="col-md-4">
+                                                                                        <input class="form-check-input"
+                                                                                            type="checkbox" value="True"
+                                                                                            {% if user.is_active == True %}
+                                                                                            checked {% endif %}
+                                                                                            name="is_active">
+                                                                                        <label class="form-label"
+                                                                                            for="inlineCheckbox1">is_active</label>
+                                                                                    </div>
+                                                                                    <div class="col-md-4">
+                                                                                        <input class="form-check-input"
+                                                                                            value="True" name="is_admin"
+                                                                                            type="checkbox"
+                                                                                            {% if user.is_admin == True %}
+                                                                                            checked {% endif %}>
+                                                                                        <label class="form-label"
+                                                                                            for="inlineCheckbox1">is_admin</label>
+                                                                                    </div>
+                                                                                    <div class="col-md-4">
+                                                                                        <input class="form-check-input"
+                                                                                            type="checkbox"
+                                                                                            name="is_superuser"
+                                                                                            value="True"
+                                                                                            {% if user.is_superuser == True %}
+                                                                                            checked {% endif %}>
+                                                                                        <label class="form-label"
+                                                                                            for="inlineCheckbox1">is_superuser</label>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="row ml-2 my-2">
+                                                                                    <div class="col-md-4">
+                                                                                        <input class="form-check-input"
+                                                                                            type="checkbox" value="True"
+                                                                                            {% if user.is_staff == True %}
+                                                                                            checked {% endif %}
+                                                                                            name="is_staff">
+                                                                                        <label class="form-label"
+                                                                                            for="inlineCheckbox1">is_staff</label>
+                                                                                    </div>
+
+                                                                                </div>
+                                                                                <button type="submit"
+                                                                                    class="btn btn-primary w-100">Save</button>
+                                                                            </form>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="profile2" role="tabpanel" aria-labelledby="profile-tab2">
+                                <div class="table-responsive">
+                                    <table class="table table-striped data_table">
+                                        <thead>
+                                            <tr>
+                                                <th>Premise No</th>
+                                                <th>Premise Name</th>
+                                                <th>Amount Payable</th>
+                                                <th>Paid</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for retail in submitted %}
+                                            <tr>
+                                                <td>{{retail.RetailDealersNo}}</td>
+                                                <td>{{retail.PremiseName}}</td>
+                                                <td>{{retail.Currency}} {{retail.AmountPayable}}</td>
+                                                <td>
+                                                    {% if retail.Paid %}
+                                                    Yes
+                                                    {% else %}
+                                                    No
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if retail.Status == "Open" %}
+                                                    <div class="badge badge-info">{{retail.Status}}</div>
+                                                    {% elif retail.Status == "Processing" %}
+                                                    <div class="badge badge-warning">{{retail.Status}}</div>
+                                                    {% elif retail.Status == "Approved" %}
+                                                    <div class="badge badge-success">{{retail.Status}}</div>
+                                                    {% elif retail.Status == "Rejected" %}
+                                                    <div class="badge badge-danger">{{retail.Status}}</div>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <a href="{% url 'RetailerPermitDetails' retail.RetailDealersNo %}"
+                                                        type="button" class="btn btn-primary"> View <i
+                                                            class="bi bi-eye"></i></a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="modal fade" id="add_role" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">
+                    Modify {{user.first_name}} {{user.middle_name}}
+                    {{user.last_name}} </h5>
+            </div>
+            <div class="modal-body" style="background-color: #E5E8E8;">
+                <div class="row mt-sm-4">
+                    <div class="col-md-12">
+                        <div class="card profile-widget">
+                            <div class="profile-widget-header">
+                                <img alt="image" src="{% static 'img/logo/Ellipse 56.png' %}"
+                                    class="rounded-circle profile-widget-picture">
+                            </div>
+                            <div class="card-footer">
+                                <form action="{% url 'roles' %}" method="post">
+                                    {% csrf_token %}
+                                    <div class="row ml-2 my-2">
+                                        <div class="col-md-12">
+                                            <label class="form-label">
+                                                Name</label>
+                                            <input type="text" class="form-control" name="role_name">
+                                        </div>
+                                    </div>
+                                    <div class="row ml-2 my-2">
+                                        <div class="col-md-12">
+                                            <button type="submit" class="btn btn-primary w-100">Save</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

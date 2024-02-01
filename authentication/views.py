@@ -260,7 +260,7 @@ class UserRegistrationView(UserObjectMixins,View):
                 agree=agree,
                 is_admin=False,
                 is_staff=True,
-                is_superuser=True,
+                is_superuser=False,
                 phone_number = phone_number
             )
             user.save()    

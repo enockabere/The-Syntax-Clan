@@ -5,7 +5,6 @@ from myRequest.views import UserObjectMixins
 import logging
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.contrib.auth.models import Group
 from authentication.models import CustomUser
 
 
@@ -18,11 +17,13 @@ class Dashboard(UserObjectMixins,View):
     def get(self, request):
         ctx = {}
         try:
+            user_data = request.session["user_data"]
             admin_users_count = CustomUser.objects.filter(is_admin=True).count()
             active_verified_users_count = CustomUser.objects.filter(is_active=True, is_email_verified=True).count()
             ctx = {
                     'admin_users_count': admin_users_count,
                     'active_verified_users_count': active_verified_users_count,
+                    "user_data":user_data,
             }
         except Exception as e:
             messages.info(request, "Session Expired, Login Again")

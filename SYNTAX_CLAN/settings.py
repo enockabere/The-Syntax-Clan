@@ -37,6 +37,11 @@ LOGGING = {
             "class": "logging.FileHandler",
             "filename": os.path.join(LOGGING_DIR, "admin_dashboard.log"),
         },
+        "admin_users_file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(LOGGING_DIR, "admin_users.log"),
+        },
     },
     "loggers": {
         "django": {
@@ -56,6 +61,11 @@ LOGGING = {
         },
         "admin_dashboard": {
             "handlers": ["admin_dashboard_file"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+        "admin_users": {
+            "handlers": ["admin_users_file"],
             "level": "DEBUG",
             "propagate": True,
         },
@@ -97,6 +107,7 @@ INSTALLED_APPS = [
     "advertisement",
     "disposal",
     "manufacturing",
+    "user_management",
 ]
 
 MIDDLEWARE = [
