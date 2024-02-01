@@ -80,8 +80,8 @@
                                                 <th>phone_number</th>
                                                 <th>date_of_birth</th>
                                                 <th>is_active</th>
-                                                <th>is_staff</th>
-                                                <th>is_email_verified</th>
+                                                <th>is_verified</th>
+                                                <th>roles</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -100,19 +100,30 @@
                                                     {% endif %}
                                                 </td>
                                                 <td>
-                                                    {% if user.is_staff == True %}
-                                                    Yes
-                                                    {% else %}
-                                                    No
-                                                    {% endif %}
-                                                </td>
-                                                <td>
                                                     {% if user.is_email_verified == True %}
                                                     Yes
                                                     {% else %}
                                                     No
                                                     {% endif %}
                                                 </td>
+                                                <td>
+                                                    {% for role in user.groups.all %}
+                                                    <form method="post" action="{% url 'admin_remove_role' %}"
+                                                        style="display: inline;">
+                                                        {% csrf_token %}
+                                                        {{ role.name }}
+                                                        <input type="hidden" name="user_id" value="{{user.id}}">
+                                                        <input type="hidden" name="role_id" value="{{role.id}}">
+                                                        <button type="submit"
+                                                            style="border: none; background-color: transparent; cursor: pointer;">
+                                                            <i class="fas fa-times"
+                                                                style="color: red; margin-left: 5px;"></i>
+                                                        </button>
+                                                    </form>
+                                                    {% if not forloop.last %}, {% endif %}
+                                                    {% endfor %}
+                                                </td>
+
                                                 <td>
                                                     <div class="dropdown">
                                                         <a href="#" class="dropdown-toggle btn btn-primary"
@@ -376,6 +387,83 @@
                                                                                 </div>
                                                                                 <button type="submit"
                                                                                     class="btn btn-primary w-100">Save</button>
+                                                                            </form>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal fade" id="add_role_user{{user.id}}"
+                                                data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                                                aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                <div
+                                                    class="modal-dialog modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="staticBackdropLabel">
+                                                                Assign Role to {{user.first_name}} {{user.middle_name}}
+                                                                {{user.last_name}} </h5>
+                                                        </div>
+                                                        <div class="modal-body" style="background-color: #E5E8E8;">
+                                                            <div class="row mt-sm-4">
+                                                                <div class="col-md-12">
+                                                                    <div class="card profile-widget">
+                                                                        <div class="profile-widget-header">
+                                                                            <img alt="image"
+                                                                                src="{% static 'img/logo/Ellipse 56.png' %}"
+                                                                                class="rounded-circle profile-widget-picture">
+                                                                        </div>
+
+                                                                        <div class="card-footer">
+                                                                            <form action="{% url 'admin_assign_role' %}"
+                                                                                method="post">
+                                                                                {% csrf_token %}
+                                                                                <p class="text-small text-primary">
+                                                                                    My Roles</p>
+                                                                                <div class="row my-3">
+                                                                                    {% for role in user.groups.all %}
+                                                                                    <div class="col-md-4">
+                                                                                        <input type="text"
+                                                                                            class="form-control"
+                                                                                            placeholder="{{ role.name }}"
+                                                                                            readonly>
+                                                                                    </div>
+                                                                                    {% if not forloop.last %}
+                                                                                    {% endif %}
+                                                                                    {% endfor %}
+                                                                                </div>
+                                                                                <input type="hidden" name="user_id"
+                                                                                    value="{{user.id}}">
+                                                                                <div class="row my-2">
+                                                                                    <div class="col-md-12">
+                                                                                        <label class="form-label">Select
+                                                                                            Role
+                                                                                            <span
+                                                                                                class="text-danger">*</span></label>
+                                                                                        <select class="form-control"
+                                                                                            aria-label="Default select example"
+                                                                                            name="role_id">
+                                                                                            <option selected value="">
+                                                                                                Choose...</option>
+                                                                                            {% for role in roles %}
+                                                                                            <option value="{{role.id}}">
+                                                                                                {{role.name}}</option>
+                                                                                            {% endfor %}
+                                                                                        </select>
+
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="row my-2">
+                                                                                    <div class="col-md-12">
+                                                                                        <button type="submit"
+                                                                                            class="btn btn-primary w-100">Assign</button>
+                                                                                    </div>
+                                                                                </div>
                                                                             </form>
 
                                                                         </div>

@@ -21,10 +21,12 @@ class AdminAllUsers(UserObjectMixins, View):
             user_data = request.session["user_data"]
             
             all_users = CustomUser.objects.all()
+            roles = Group.objects.all()
 
             ctx = {
                 "user_data": user_data,
                 "all_users": all_users,
+                "roles":roles
             }
         except Exception as e:
             messages.info(request, "Session Expired, Login Again")
@@ -81,10 +83,15 @@ class AdminRoles(UserObjectMixins, View):
             user_data = request.session["user_data"]
             
             all_roles = Group.objects.all()
+            
+            user = CustomUser.objects.get(id=user_data.user_id)
+            
+            user_roles = user.groups.all()
 
             ctx = {
                 "user_data": user_data,
                 "all_roles": all_roles,
+                "user_roles": user_roles,
             }
         except Exception as e:
             messages.info(request, "Session Expired, Login Again")
@@ -112,3 +119,76 @@ class AdminRoles(UserObjectMixins, View):
             messages.info(request, "Session Expired, Login Again")
             print(e)
             return redirect("roles")
+        
+
+class AdminEditRoles(UserObjectMixins, View):
+    def post(self, request):
+        try:
+            role_id = request.POST.get('role_id')
+            role_name = request.POST.get('role_name')
+
+            if role_id and role_id.isdigit():
+                role_to_edit = Group.objects.get(id=role_id)
+                role_to_edit.name = role_name
+                role_to_edit.save()
+                
+                messages.success(request, 'Updated successfully.')
+                return redirect("roles")
+            else:
+                messages.error(request, 'Invalid Role ID.')
+                return redirect("roles")
+
+        except Group.DoesNotExist:
+            messages.error(request, 'Role not found.')
+            return redirect("roles")
+        except Exception as e:
+            messages.error(request, f'An error occurred: {e}')
+            return redirect("roles")
+
+class AdminAssignRoleToUser(UserObjectMixins, View):
+    def post(self, request):
+        try:
+            role_id = request.POST.get('role_id')
+            user_id = request.POST.get('user_id')
+            user = CustomUser.objects.get(id=user_id)
+            role = Group.objects.get(id=role_id)
+            
+            user.groups.add(role)
+            messages.success(request, 'Role assigned successfully.')
+            return redirect("admin_all_users")
+
+        except CustomUser.DoesNotExist:
+            messages.error(request, 'User not found.')
+            return redirect("admin_all_users")
+        except Group.DoesNotExist:
+            messages.error(request, 'Role not found.')
+            return redirect("admin_all_users")
+        except Exception as e:
+            messages.error(request, f'An error occurred: {e}')
+            return redirect("admin_all_users")
+        
+class AdminRemoveRoleFromUser(UserObjectMixins, View):
+    def post(self, request):
+        try:
+            role_id = request.POST.get('role_id')
+            user_id = request.POST.get('user_id')
+            user = CustomUser.objects.get(id=user_id)
+            
+            if role_id and role_id.isdigit():
+                role_to_remove = Group.objects.get(id=role_id)
+                user.groups.remove(role_to_remove)
+                messages.success(request, 'Role removed successfully.')
+                return redirect('admin_all_users')
+            else:
+                messages.error(request, 'Invalid Role ID.')
+                return redirect('admin_all_users')
+            
+        except CustomUser.DoesNotExist:
+            messages.error(request, 'User not found.')
+            return redirect("admin_all_users")
+        except Group.DoesNotExist:
+            messages.error(request, 'Role not found.')
+            return redirect("admin_all_users")
+        except Exception as e:
+            messages.error(request, f'An error occurred: {e}')
+            return redirect("admin_all_users")

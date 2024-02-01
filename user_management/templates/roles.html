@@ -88,33 +88,14 @@
                                                 <td>{{role.id}}</td>
                                                 <td>{{role.name}}</td>
                                                 <td>
-                                                    <div class="dropdown">
-                                                        <a href="#" class="dropdown-toggle btn btn-primary w-100"
-                                                            data-toggle="dropdown">Manage</a>
-                                                        <div class="dropdown-menu dropdown-menu-right">
-                                                            <a href="#" class="dropdown-item has-icon"
-                                                                data-toggle="modal"
-                                                                data-target="#edit_user{{user.id}}"><i
-                                                                    class="fas fa-pencil-alt"></i>Edit User</a>
-                                                            <a href="#" class="dropdown-item has-icon"
-                                                                data-toggle="modal"
-                                                                data-target="#add_role_user{{user.id}}"><i
-                                                                    class="fas fa-user-plus"></i> Assign Role</a>
-                                                            <a href="#" class="dropdown-item has-icon"
-                                                                data-toggle="modal"
-                                                                data-target="#remove_role_user{{user.id}}"><i
-                                                                    class="fas fa-user-minus"></i> Remove Role</a>
-                                                            <a href="#" class="dropdown-item has-icon"
-                                                                data-toggle="modal"
-                                                                data-target="#view_user{{user.id}}"><i
-                                                                    class="fas fa-ellipsis-h"></i> View User</a>
-                                                            <div class="dropdown-divider"></div>
-                                                        </div>
-                                                    </div>
+                                                    <button type="button" class="btn btn-primary w-100"
+                                                        data-toggle="modal" data-target="#edit_role{{role.id}}"><i
+                                                            class="fas fa-pencil-alt"></i> Edit
+                                                        Role</button>
 
                                                 </td>
                                             </tr>
-                                            <div class="modal fade" id="edit_user{{user.id}}" data-bs-backdrop="static"
+                                            <div class="modal fade" id="edit_role{{role.id}}" data-bs-backdrop="static"
                                                 data-bs-keyboard="false" tabindex="-1"
                                                 aria-labelledby="staticBackdropLabel" aria-hidden="true">
                                                 <div
@@ -122,70 +103,35 @@
                                                     <div class="modal-content">
                                                         <div class="modal-header">
                                                             <h5 class="modal-title" id="staticBackdropLabel">
-                                                                Modify {{user.first_name}} {{user.middle_name}}
-                                                                {{user.last_name}} </h5>
+                                                                Modify Role - {{role.id}} </h5>
                                                         </div>
                                                         <div class="modal-body" style="background-color: #E5E8E8;">
                                                             <div class="row mt-sm-4">
                                                                 <div class="col-md-12">
                                                                     <div class="card profile-widget">
-                                                                        <div class="profile-widget-header">
-                                                                            <img alt="image"
-                                                                                src="{% static 'img/logo/Ellipse 56.png' %}"
-                                                                                class="rounded-circle profile-widget-picture">
-                                                                        </div>
                                                                         <div class="card-footer">
-                                                                            <form action="{% url 'admin_edit_users' %}"
+                                                                            <form action="{% url 'admin_edit_roles' %}"
                                                                                 method="post">
                                                                                 {% csrf_token %}
-                                                                                <input type="hidden" name="user_id"
-                                                                                    value="{{user.id}}">
+                                                                                <input type="hidden" name="role_id"
+                                                                                    value="{{role.id}}">
                                                                                 <div class="row ml-2 my-2">
-                                                                                    <div class="col-md-4">
-                                                                                        <input class="form-check-input"
-                                                                                            type="checkbox" value="True"
-                                                                                            {% if user.is_active == True %}
-                                                                                            checked {% endif %}
-                                                                                            name="is_active">
-                                                                                        <label class="form-label"
-                                                                                            for="inlineCheckbox1">is_active</label>
-                                                                                    </div>
-                                                                                    <div class="col-md-4">
-                                                                                        <input class="form-check-input"
-                                                                                            value="True" name="is_admin"
-                                                                                            type="checkbox"
-                                                                                            {% if user.is_admin == True %}
-                                                                                            checked {% endif %}>
-                                                                                        <label class="form-label"
-                                                                                            for="inlineCheckbox1">is_admin</label>
-                                                                                    </div>
-                                                                                    <div class="col-md-4">
-                                                                                        <input class="form-check-input"
-                                                                                            type="checkbox"
-                                                                                            name="is_superuser"
-                                                                                            value="True"
-                                                                                            {% if user.is_superuser == True %}
-                                                                                            checked {% endif %}>
-                                                                                        <label class="form-label"
-                                                                                            for="inlineCheckbox1">is_superuser</label>
+                                                                                    <div class="col-md-12">
+                                                                                        <label class="form-label">
+                                                                                            Name</label>
+                                                                                        <input type="text"
+                                                                                            class="form-control"
+                                                                                            name="role_name"
+                                                                                            value="{{role.name}}">
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="row ml-2 my-2">
-                                                                                    <div class="col-md-4">
-                                                                                        <input class="form-check-input"
-                                                                                            type="checkbox" value="True"
-                                                                                            {% if user.is_staff == True %}
-                                                                                            checked {% endif %}
-                                                                                            name="is_staff">
-                                                                                        <label class="form-label"
-                                                                                            for="inlineCheckbox1">is_staff</label>
+                                                                                    <div class="col-md-12">
+                                                                                        <button type="submit"
+                                                                                            class="btn btn-primary w-100">Edit</button>
                                                                                     </div>
-
                                                                                 </div>
-                                                                                <button type="submit"
-                                                                                    class="btn btn-primary w-100">Save</button>
                                                                             </form>
-
                                                                         </div>
                                                                     </div>
                                                                 </div>

@@ -313,6 +313,7 @@ class Login(UserObjectMixins, View):
                 user_roles = list(user.groups.values_list('name', flat=True))
                
                 user_data = {
+                    "user_id": user.id,
                     "full_name":full_name,
                     "id_number":user.id_number,
                     "email": user.email,
