@@ -8,66 +8,214 @@
     <h1>Dashboard</h1>
   </div>
   <div class="row">
-    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-      <div class="card card-statistic-1">
-        <div class="card-icon bg-primary">
-          <i class="far fa-user"></i>
-        </div>
-        <div class="card-wrap">
-          <div class="card-header">
-            <h4>Total Admin Members</h4>
-          </div>
-          <div class="card-body">
-            {{admin_users_count}}
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+    <div class="col-lg-4 col-md-6 col-sm-6 col-12">
       <div class="card card-statistic-1">
         <div class="card-icon bg-success">
           <i class="fas fa-users"></i>
         </div>
         <div class="card-wrap">
           <div class="card-header">
-            <h4>Total Active Members</h4>
+            <h4>Total Members</h4>
           </div>
           <div class="card-body">
-            {{active_verified_users_count}}
+            {{total_users_count}}
           </div>
         </div>
       </div>
     </div>
-    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+    <div class="col-lg-4 col-md-6 col-sm-6 col-12">
       <div class="card card-statistic-1">
         <div class="card-icon bg-warning">
           <i class="far fa-file"></i>
         </div>
         <div class="card-wrap">
           <div class="card-header">
-            <h4>Reports</h4>
+            <h4>Number of Savings Accounts</h4>
           </div>
           <div class="card-body">
-            0
+            {{total_accounts}}
           </div>
         </div>
       </div>
     </div>
-    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+    <div class="col-lg-4 col-md-6 col-sm-6 col-12">
       <div class="card card-statistic-1">
-        <div class="card-icon bg-success">
-          <i class="fas fa-circle"></i>
+        <div class="card-icon bg-info">
+          <i class="fas fa-coins"></i>
         </div>
         <div class="card-wrap">
           <div class="card-header">
-            <h4>Users</h4>
+            <h4>Total Savings (KES)</h4>
           </div>
           <div class="card-body">
-            0
+            <span>{{total_amount_saved}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row my-3">
+    <div class="col-md-12">
+      <div class="card card-primary">
+        <div class="card-header">
+          <h4>Saving Statistics</h4>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-striped data_table">
+              <thead>
+                <tr>
+                  <th>account id</th>
+                  <th>account type</th>
+                  <th>total amount</th>
+                  <th>number of customers</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for account_total in account_totals %}
+                <tr>
+                  <td>{{ account_total.account_type.id }}</td>
+                  <td>{{ account_total.account_type.account_name }}</td>
+                  <td>KES {{ account_total.total_amount|default:"0" }}</td>
+                  <td>{{ account_total.num_customers }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card h-100">
+        <div class="card-header">
+          <h4>User Statistics</h4>
+        </div>
+        <div class="card-body bg-secondaty">
+          <canvas id="myChart" height="100"></canvas>
+          <div class="statistic-details mt-sm-4 ">
+            <div class="statistic-details-item">
+              <div class="detail-value"> {{admin_users_count}}</div>
+              <div class="detail-name">Total Admin Users</div>
+            </div>
+            <div class="statistic-details-item">
+              <div class="detail-value">{{non_admin_users_count}}</div>
+              <div class="detail-name">Non-Admin Users</div>
+            </div>
+            <div class="statistic-details-item">
+              <div class="detail-value">{{active_users_count}}</div>
+              <div class="detail-name">Total Active Users</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-header">
+          <h4>Savings Leader Board</h4>
+        </div>
+        <div class="card-body">
+          <div class="summary">
+            <div class="summary-info">
+              <h4>KES {{ total_amount_saved }}</h4>
+              <div class="text-muted">{{ transactions_within_range }} transactions in the last
+                {{ days_between_transactions }} days</div>
+              <div class="d-block mt-2">
+                <a href="{% url 'admin_transactions_test' %}">View All</a>
+              </div>
+            </div>
+            <div class="summary-item">
+              <h6>User List <span class="text-muted">(3 Items)</span></h6>
+              <ul class="list-unstyled list-unstyled-border">
+                {% for user_saving in user_savings %}
+                <li class="media">
+                  <a href="#">
+                    <img class="mr-3 rounded" width="50" src="{% static 'img/logo/Ellipse 56.png' %}" alt="product">
+                  </a>
+                  <div class="media-body">
+                    <div class="media-right">KES {{ user_saving.total_savings }}</div>
+                    <div class="media-title"><a href="#">{{ user_saving.first_name }} {{ user_saving.last_name }}</a>
+                    </div>
+                    <div class="text-muted text-small">ID:
+                      {{ user_saving.id_number }}
+                    </div>
+                  </div>
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 </section>
+<script>
+  "use strict"
+
+  $(document).ready(function () {
+
+    var total_users_count = "{{total_users_count}}"
+    var total_users = parseInt(total_users_count)
+    var staff_users_count = "{{staff_users_count}}"
+    var total_staff = parseInt(staff_users_count)
+    var superusers_count = "{{superusers_count}}"
+    var total_superuser = parseInt(superusers_count)
+    var verified_users_count = "{{verified_users_count}}"
+    var total_verified = parseInt(verified_users_count)
+
+    createChart(total_staff, total_superuser, total_verified, total_users)
+
+    function createChart(
+      total_staff,
+      total_superuser,
+      total_verified,
+      total_users
+    ) {
+      var statistics_chart = document.getElementById("myChart").getContext("2d")
+
+      var myChart = new Chart(statistics_chart, {
+        type: "line",
+        data: {
+          labels: ["Total Staff", "Total Super Users", "Total Verified Users"],
+          datasets: [{
+            label: "User Statistics",
+            data: [total_staff, total_superuser, total_verified],
+            borderWidth: 5,
+            borderColor: "#ff6022",
+            backgroundColor: "transparent",
+            pointBackgroundColor: "#fff",
+            pointBorderColor: "#000",
+            pointRadius: 8,
+          }, ],
+        },
+        options: {
+          legend: {
+            display: false,
+          },
+          scales: {
+            yAxes: [{
+              gridLines: {
+                display: false,
+                drawBorder: false,
+              },
+              ticks: {
+                stepSize: total_users,
+              },
+            }, ],
+            xAxes: [{
+              gridLines: {
+                color: "#fbfbfb",
+                lineWidth: 2,
+              },
+            }, ],
+          },
+        },
+      })
+    }
+  })
+</script>
 {% endblock %}

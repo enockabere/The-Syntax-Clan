@@ -16,6 +16,7 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.http import HttpResponseRedirect
+from savings.models import Account
 
 
 class AdminRegistrationView(UserObjectMixins,View):
@@ -309,29 +310,39 @@ class Login(UserObjectMixins, View):
             user = authenticate(request, id_number=id_number, password=password)
 
             if user is not None and user.is_active and user.is_email_verified:
-                full_name = f"{user.first_name} {user.middle_name} {user.last_name}"
-                user_roles = list(user.groups.values_list('name', flat=True))
-               
-                user_data = {
-                    "user_id": user.id,
-                    "full_name":full_name,
-                    "id_number":user.id_number,
-                    "email": user.email,
-                    "user_roles":user_roles,
-                    "current_role": None
-                }
                 
-                request.session['user_data'] = user_data
+                try:
+                    account = Account.objects.get(user=user.id, account_type__account_name='Registration Account')
+                    if account.has_paid_registration():
+                
+                        full_name = f"{user.first_name} {user.middle_name} {user.last_name}"
+                        user_roles = list(user.groups.values_list('name', flat=True))
+               
+                        user_data = {
+                            "user_id": user.id,
+                            "full_name":full_name,
+                            "id_number":user.id_number,
+                            "email": user.email,
+                            "user_roles":user_roles,
+                            "current_role": None
+                        }
+                        
+                        request.session['user_data'] = user_data
 
-                login(request, user)
-
-                if remember:
-                    request.session.set_expiry(30 * 24 * 60 * 60)
-                    
-                if len(user_roles) == 1:
-                    return redirect('user_dashboard')
-                else:
-                    return redirect('role_select')
+                        login(request, user)
+                        if remember:
+                            request.session.set_expiry(30 * 24 * 60 * 60)
+                            
+                        if len(user_roles) == 1:
+                            return redirect('user_dashboard')
+                        else:
+                            return redirect('role_select')
+                    else:
+                        messages.error(request, 'You have not paid the registration fees.')
+                        return redirect('Login')
+                except Account.DoesNotExist:
+                    messages.error(request, 'Account matching query does not exist.')
+                    return redirect('Login')
             else:
                 if user is not None and not user.is_active:
                     messages.error(request, 'Your account is not active. Please contact support.')

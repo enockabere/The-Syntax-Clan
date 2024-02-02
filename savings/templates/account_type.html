@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="{% static 'plugins/iziToast-master/dist/js/iziToast.min.js' %}" type="text/javascript"></script>
+<section class="section">
+    <div class="section-header">
+        <h1>Account Types</h1>
+        <div class="section-header-breadcrumb">
+            <div class="breadcrumb-item active"><a href="{% url 'dashboard' %}" class="br-text">Dashboard</a></div>
+            <div class="breadcrumb-item">Account Types</div>
+        </div>
+    </div>
+    <div class="section-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="section-title">Account Type List</h2>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_acc_type"><i
+                    class="fas fa-plus"></i> Add Account Type</button>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                {% if messages %}
+                {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                <script>
+                    iziToast.show({
+                        theme: 'dark',
+                        backgroundColor: '#ff6022',
+                        icon: 'las la-check-circle',
+                        title: '{{message}}',
+                        position: 'topRight',
+                        progressBarColor: '#F4F6F7',
+                    });
+                </script>
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+                <script>
+                    iziToast.show({
+                        theme: 'dark',
+                        backgroundColor: '#3abaf4',
+                        icon: 'las la-exclamation',
+                        title: '{{message}}',
+                        position: 'topRight',
+                        progressBarColor: '#F4F6F7',
+                    });
+                </script>
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <script>
+                    iziToast.show({
+                        theme: 'dark',
+                        backgroundColor: '#000',
+                        icon: 'las la-exclamation-circle',
+                        title: '{{message}}',
+                        position: 'topRight',
+                        progressBarColor: '#F4F6F7',
+                    });
+                </script>
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <ul class="nav nav-tabs" id="myTab2" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="home-tab2" data-toggle="tab" href="#home2" role="tab"
+                                    aria-controls="home" aria-selected="true">Account Types
+                                    ({{account_types|length}})</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content tab-bordered" id="myTab3Content">
+                            <div class="tab-pane fade show active" id="home2" role="tabpanel"
+                                aria-labelledby="home-tab2">
+                                <div class="table-responsive">
+                                    <table class="table table-striped data_table">
+                                        <thead>
+                                            <tr>
+                                                <th>role id</th>
+                                                <th>account name</th>
+                                                <th>min amount</th>
+                                                <th>max amount</th>
+                                                <th>public</th>
+                                                <th>owner</th>
+                                                <th>action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for account_type in account_types %}
+                                            <tr>
+                                                <td>{{account_type.id}}</td>
+                                                <td>{{account_type.account_name}}</td>
+                                                <td>KES {{account_type.min_amount}}</td>
+                                                <td>KES {{account_type.max_amount}}</td>
+                                                <td>
+                                                    {% if account_type.is_public == True %}
+                                                    Yes
+                                                    {% else %}
+                                                    No
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{account_type.creator}}</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-primary w-100"
+                                                        data-toggle="modal" data-target="#edit_role{{role.id}}"><i
+                                                            class="fas fa-pencil-alt"></i> Edit
+                                                        Role</button>
+
+                                                </td>
+                                            </tr>
+                                            <div class="modal fade" id="edit_role{{role.id}}" data-bs-backdrop="static"
+                                                data-bs-keyboard="false" tabindex="-1"
+                                                aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                <div
+                                                    class="modal-dialog modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="staticBackdropLabel">
+                                                                Modify Role - {{role.id}} </h5>
+                                                        </div>
+                                                        <div class="modal-body" style="background-color: #E5E8E8;">
+                                                            <div class="row mt-sm-4">
+                                                                <div class="col-md-12">
+                                                                    <div class="card profile-widget">
+                                                                        <div class="card-footer">
+                                                                            <form action="{% url 'admin_edit_roles' %}"
+                                                                                method="post">
+                                                                                {% csrf_token %}
+                                                                                <input type="hidden" name="role_id"
+                                                                                    value="{{role.id}}">
+                                                                                <div class="row ml-2 my-2">
+                                                                                    <div class="col-md-12">
+                                                                                        <label class="form-label">
+                                                                                            Name</label>
+                                                                                        <input type="text"
+                                                                                            class="form-control"
+                                                                                            name="role_name"
+                                                                                            value="{{role.name}}">
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="row ml-2 my-2">
+                                                                                    <div class="col-md-12">
+                                                                                        <button type="submit"
+                                                                                            class="btn btn-primary w-100">Edit</button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </form>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="modal fade" id="add_acc_type" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">
+                    Add Account Type </h5>
+            </div>
+            <div class="modal-body" style="background-color: #E5E8E8;">
+                <div class="row mt-sm-4">
+                    <div class="col-md-12">
+                        <div class="card p-3">
+                            <form action="{% url 'admin_account_types' %}" method="post">
+                                {% csrf_token %}
+                                <div class="row ml-2 my-2">
+                                    <div class="col-md-6">
+                                        <label class="form-label">
+                                            Account Name</label>
+                                        <input type="text" class="form-control" name="account_name">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">
+                                            Min Amount</label>
+                                        <input type="number" class="form-control" min="50" name="min_amount">
+                                    </div>
+                                </div>
+                                <div class="row ml-2 my-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">
+                                            Max Amount</label>
+                                        <input type="number" class="form-control" min="500" name="max_amount">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Visibility
+                                            <span class="text-danger">*</span></label>
+                                        <select class="form-control" aria-label="Default select example"
+                                            name="is_public">
+                                            <option selected value="">
+                                                Choose...</option>
+                                            <option value="True">
+                                                Public</option>
+                                            <option value="False">Private</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row ml-2 my-2">
+                                    <div class="col-md-12">
+                                        <button type="submit" class="btn btn-primary w-100">Save</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

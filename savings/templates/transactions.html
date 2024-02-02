@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block base %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="{% static 'plugins/iziToast-master/dist/js/iziToast.min.js' %}" type="text/javascript"></script>
+<section class="section">
+    <div class="section-header">
+        <h1>Transactions</h1>
+        <div class="section-header-breadcrumb">
+            <div class="breadcrumb-item active"><a href="{% url 'dashboard' %}" class="br-text">Dashboard</a></div>
+            <div class="breadcrumb-item">Transactions</div>
+        </div>
+    </div>
+    <div class="section-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="section-title">Transactions List</h2>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_acc_type"><i
+                    class="fas fa-plus"></i> New Transaction</button>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                {% if messages %}
+                {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                <script>
+                    iziToast.show({
+                        theme: 'dark',
+                        backgroundColor: '#ff6022',
+                        icon: 'las la-check-circle',
+                        title: '{{message}}',
+                        position: 'topRight',
+                        progressBarColor: '#F4F6F7',
+                    });
+                </script>
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+                <script>
+                    iziToast.show({
+                        theme: 'dark',
+                        backgroundColor: '#3abaf4',
+                        icon: 'las la-exclamation',
+                        title: '{{message}}',
+                        position: 'topRight',
+                        progressBarColor: '#F4F6F7',
+                    });
+                </script>
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <script>
+                    iziToast.show({
+                        theme: 'dark',
+                        backgroundColor: '#000',
+                        icon: 'las la-exclamation-circle',
+                        title: '{{message}}',
+                        position: 'topRight',
+                        progressBarColor: '#F4F6F7',
+                    });
+                </script>
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <ul class="nav nav-tabs" id="myTab2" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="home-tab2" data-toggle="tab" href="#home2" role="tab"
+                                    aria-controls="home" aria-selected="true">Transactions
+                                    ({{transactions|length}})</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content tab-bordered" id="myTab3Content">
+                            <div class="tab-pane fade show active" id="home2" role="tabpanel"
+                                aria-labelledby="home-tab2">
+                                <div class="table-responsive">
+                                    <table class="table table-striped data_table">
+                                        <thead>
+                                            <tr>
+                                                <th>transaction id</th>
+                                                <th>customer name</th>
+                                                <th>account type</th>
+                                                <th>transaction amount</th>
+                                                <th>transaction date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for transaction in transactions %}
+                                            <tr>
+                                                <td>{{transaction.id}}</td>
+                                                <td>{{transaction.user}}</td>
+                                                <td>{{transaction.account_type}}</td>
+                                                <td>KES {{transaction.amount}}</td>
+                                                <td>{{transaction.timestamp}}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="modal fade" id="add_acc_type" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">
+                    New Transaction </h5>
+            </div>
+            <div class="modal-body" style="background-color: #E5E8E8;">
+                <div class="row mt-sm-4">
+                    <div class="col-md-12">
+                        <div class="card p-3">
+                            <form action="{% url 'admin_transactions_test' %}" method="post">
+                                {% csrf_token %}
+                                <div class="row ml-2 my-2">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Account Type
+                                            <span class="text-danger">*</span></label>
+                                        <select class="form-control" aria-label="Default select example"
+                                            name="account_type">
+                                            <option selected value="">
+                                                Choose Account...</option>
+                                            {% for account in account_types %}
+                                            <option value="{{account.id}}">{{account.account_name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">
+                                            Amount</label>
+                                        <input type="number" class="form-control" min="50" name="amount">
+                                    </div>
+                                </div>
+                                <div class="row ml-2 my-2">
+                                    <div class="col-md-12">
+                                        <button type="submit" class="btn btn-primary w-100">Save</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -42,6 +42,11 @@ LOGGING = {
             "class": "logging.FileHandler",
             "filename": os.path.join(LOGGING_DIR, "admin_users.log"),
         },
+        "savings_file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(LOGGING_DIR, "savings.log"),
+        },
     },
     "loggers": {
         "django": {
@@ -66,6 +71,11 @@ LOGGING = {
         },
         "admin_users": {
             "handlers": ["admin_users_file"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+        "savings": {
+            "handlers": ["savings_file"],
             "level": "DEBUG",
             "propagate": True,
         },
@@ -94,18 +104,11 @@ INSTALLED_APPS = [
     "authentication",
     "base",
     "dashboard",
-    "pharmaceutical",
+    "savings",
     "vaccine",
     "pesticide",
-    "feed",
-    "biocidal",
-    "devices",
     "retention",
     "myRequest",
-    "permit",
-    "retailers",
-    "advertisement",
-    "disposal",
     "manufacturing",
     "user_management",
 ]
